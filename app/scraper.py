@@ -258,6 +258,9 @@ class UriCpaScraper:
                 dates_seen.append(lec["last_date"])
 
         first_date = min(dates_seen) if dates_seen else None
+        avg_duration_min = round(
+            sum(l["duration_min"] for l in lectures) / len(lectures), 1
+        ) if lectures else 60.0
 
         return {
             "id":               course["id"],
@@ -270,6 +273,7 @@ class UriCpaScraper:
             "lectures":         lectures,
             "start_date":       start_date.isoformat() if start_date else None,
             "first_watched_date": first_date,
+            "avg_duration_min":  avg_duration_min,
         }
 
     def fetch_all(self) -> dict:

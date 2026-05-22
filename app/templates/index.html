@@ -1,517 +1,450 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>우리경영아카데미 강의 트래커</title>
-  <meta name="description" content="CTA 2차 대비 강의 진도 현황 및 완강 예상일 트래커" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>강의 진도 트래커</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:      #0b0f1a;
-      --s1:      #111827;
-      --s2:      #1a2235;
-      --border:  rgba(255,255,255,0.07);
-      --text:    #e2e8f0;
-      --muted:   #64748b;
-      --accent:  #6366f1;
-      --accent2: #818cf8;
-      --green:   #4ade80;
-      --orange:  #fb923c;
-      --blue:    #38bdf8;
-      --purple:  #c084fc;
-      --gold:    #fbbf24;
-      --red:     #f87171;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0b0f1a;--s1:#111827;--s2:#1a2235;
+      --bd:rgba(255,255,255,.07);--text:#e2e8f0;--muted:#64748b;
+      --accent:#6366f1;--a2:#818cf8;
+      --green:#4ade80;--orange:#fb923c;--blue:#38bdf8;--purple:#c084fc;--gold:#fbbf24;--red:#f87171;
     }
-    html { font-size: 16px; }
-    body {
-      font-family: 'Pretendard', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(99,102,241,.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(192,132,252,.08) 0%, transparent 60%);
-      pointer-events: none; z-index: 0;
-    }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(99,102,241,.11) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(192,132,252,.07) 0%,transparent 60%);pointer-events:none;z-index:0}
+    .w{max-width:960px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
 
-    /* ── HEADER ── */
-    header { padding: 28px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
-    .hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-    .hdr h1 {
-      font-size: 1.35rem; font-weight: 800; letter-spacing: -.5px;
-      background: linear-gradient(135deg,#818cf8,#c084fc);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .hdr p { font-size: .78rem; color: var(--muted); margin-top: 2px; }
-    .hdr-right { display: flex; align-items: center; gap: 12px; }
-    .last-upd { font-size: .72rem; color: var(--muted); }
-    .last-upd b { color: var(--text); font-weight: 500; }
+    /* HEADER */
+    header{padding:18px 0 14px;border-bottom:1px solid var(--bd);margin-bottom:18px}
+    .hdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .hdr h1{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hdr-sub{font-size:.68rem;color:var(--muted)}
+    .hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .last-upd{font-size:.65rem;color:var(--muted);white-space:nowrap}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+    .btn-p{background:linear-gradient(135deg,var(--accent),var(--a2));color:#fff}
+    .btn-p:hover{opacity:.85;transform:translateY(-1px)}
+    .btn-g{background:var(--s2);color:var(--text);border:1px solid var(--bd)}
+    .btn-g:hover{background:rgba(255,255,255,.07)}
 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px; border-radius: 8px; font-size: .82rem; font-weight: 600;
-      cursor: pointer; border: none; transition: all .2s; font-family: inherit;
-    }
-    .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; }
-    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
-    .btn-ghost { background: var(--s2); color: var(--text); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: rgba(255,255,255,.07); }
-    .btn-danger { background: rgba(239,68,68,.15); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
-    .btn-danger:hover { background: rgba(239,68,68,.25); }
+    /* SETUP OVERLAY */
+    #setup-ov{position:fixed;inset:0;z-index:100;background:rgba(11,15,26,.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center}
+    #setup-ov.hidden{display:none}
+    .setup-card{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:36px 40px;width:360px;max-width:92vw;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+    .setup-card h2{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+    .setup-card p{font-size:.75rem;color:var(--muted);margin-bottom:24px}
+    .fg{margin-bottom:14px}
+    .fg label{display:block;font-size:.65rem;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+    .fg input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--text);font-size:.88rem;padding:9px 12px;font-family:inherit;outline:none;transition:border-color .2s}
+    .fg input:focus{border-color:var(--accent)}
+    .setup-err{font-size:.72rem;color:var(--red);margin-top:8px;min-height:16px}
 
-    /* ── SETUP OVERLAY ── */
-    #setup-overlay {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(11,15,26,.92);
-      backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center;
-    }
-    #setup-overlay.hidden { display: none; }
-    .setup-card {
-      background: var(--s1); border: 1px solid var(--border); border-radius: 20px;
-      padding: 40px 44px; width: 380px; max-width: 90vw;
-      box-shadow: 0 30px 80px rgba(0,0,0,.5);
-    }
-    .setup-card h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
-    .setup-card p  { font-size: .8rem; color: var(--muted); margin-bottom: 28px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .05em; }
-    .form-group input {
-      width: 100%; background: var(--s2); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: .9rem;
-      padding: 10px 14px; font-family: inherit; outline: none;
-      transition: border-color .2s;
-    }
-    .form-group input:focus { border-color: var(--accent); }
-    .setup-submit { width: 100%; margin-top: 8px; padding: 12px; font-size: .9rem; border-radius: 10px; }
-    .setup-err { font-size: .75rem; color: var(--red); margin-top: 10px; min-height: 18px; }
+    /* CARD BASE */
+    .card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;transition:transform .2s,border-color .2s}
+    .card:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.11)}
 
-    /* ── CARDS (stat) ── */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 14px; margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--s1); border: 1px solid var(--border); border-radius: 16px;
-      padding: 18px 20px; position: relative; overflow: hidden;
-      transition: transform .2s, border-color .2s;
-    }
-    .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.12); }
-    .stat-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
-    .sc-purple::before { background: linear-gradient(90deg,var(--accent),var(--purple)); }
-    .sc-green::before  { background: linear-gradient(90deg,#22c55e,var(--green)); }
-    .sc-blue::before   { background: linear-gradient(90deg,#0ea5e9,var(--blue)); }
-    .sc-gold::before   { background: linear-gradient(90deg,#f59e0b,var(--gold)); }
-    .sc-orange::before { background: linear-gradient(90deg,#ea580c,var(--orange)); }
+    /* SUMMARY CARD */
+    .summary-card{margin-bottom:14px;position:relative;overflow:hidden}
+    .summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+    .sum-row{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+    .sum-item{display:flex;flex-direction:column;padding:4px 14px;border-right:1px solid var(--bd)}
+    .sum-item:first-child{padding-left:0}
+    .sum-item:last-child{border-right:none}
+    .si-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
+    .si-val{font-size:1.3rem;font-weight:800;line-height:1;letter-spacing:-0.5px}
+    .si-val .u{font-size:.8rem;font-weight:600;margin-left:1px}
+    .si-sub{font-size:.65rem;color:var(--muted);margin-top:2px}
 
-    .sl { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; }
-    .sv { font-size:1.7rem; font-weight:800; line-height:1; letter-spacing:-1px; }
-    .sv .u { font-size:.9rem; font-weight:600; margin-left:2px; }
-    .ss { font-size:.72rem; color:var(--muted); margin-top:5px; }
-    .ss b { color:var(--text); font-weight:600; }
+    /* PROGRESS BAR */
+    .pbar-wrap{margin-top:12px}
+    .pbar-hdr{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:6px}
+    .pbar-hdr b{color:var(--text)}
+    .track{background:rgba(255,255,255,.06);border-radius:100px;height:7px;overflow:hidden}
+    .fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--purple));transition:width 1.2s cubic-bezier(.4,0,.2,1)}
 
-    /* ── PACE TABLE ── */
-    .pace-section { margin-bottom: 28px; }
-    .section-title { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:12px; }
-    .pace-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-    @media(max-width:640px){ .pace-grid{grid-template-columns:1fr;} }
+    /* PACE SECTION */
+    .pace-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    @media(max-width:500px){.pace-grid{grid-template-columns:1fr}}
+    .pace-card{position:relative;overflow:hidden}
+    .pace-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .pc-lec::before{background:linear-gradient(90deg,var(--accent),var(--purple))}
+    .pc-time::before{background:linear-gradient(90deg,#0ea5e9,var(--blue))}
+    .pace-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:9px}
+    .pace-row{display:grid;grid-template-columns:3rem 1fr 1fr;align-items:baseline;gap:4px;margin-bottom:5px;font-size:.78rem}
+    .pace-row:last-child{margin-bottom:0}
+    .pr-tag{font-size:.6rem;font-weight:700;color:var(--muted);background:rgba(255,255,255,.05);border-radius:4px;padding:2px 5px;text-align:center}
+    .pr-val{font-weight:700;font-size:.85rem}
+    .pr-finish{color:var(--muted);font-size:.75rem;text-align:right}
 
-    .pace-card {
-      background: var(--s1); border: 1px solid var(--border); border-radius: 14px;
-      padding: 18px 20px; position:relative; overflow:hidden;
-      transition: transform .2s, border-color .2s;
-    }
-    .pace-card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,.12); }
-    .pace-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
-    .pc-all::before  { background: linear-gradient(90deg,var(--accent),var(--purple)); }
-    .pc-7d::before   { background: linear-gradient(90deg,#0ea5e9,var(--blue)); }
-    .pc-3d::before   { background: linear-gradient(90deg,#16a34a,var(--green)); }
-
-    .pace-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:6px; }
-    .pace-avg   { font-size:1.5rem; font-weight:800; line-height:1; letter-spacing:-1px; }
-    .pace-avg .u { font-size:.85rem; font-weight:600; margin-left:2px; }
-    .pace-detail { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
-    .pace-row { display:flex; justify-content:space-between; align-items:baseline; font-size:.75rem; margin-top:4px; }
-    .pace-row .pk { color:var(--muted); }
-    .pace-row .pv { font-weight:700; }
-
-    /* ── OVERALL PROGRESS ── */
-    .overall-wrap { background:var(--s1); border:1px solid var(--border); border-radius:16px; padding:22px 24px; margin-bottom:28px; }
-    .overall-hdr { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
-    .overall-hdr h2 { font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
-    .overall-pct { font-size:1.5rem; font-weight:800; background:linear-gradient(135deg,var(--accent2),var(--purple)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
-    .track { background:rgba(255,255,255,.06); border-radius:100px; height:10px; overflow:hidden; }
-    .fill  { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--accent),var(--purple)); transition:width 1.2s cubic-bezier(.4,0,.2,1); }
-
-    /* ── COURSE CARDS ── */
-    .course-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:40px; }
-    .ccard {
-      background:var(--s1); border:1px solid var(--border); border-radius:16px;
-      padding:20px; position:relative; overflow:hidden;
-      transition:transform .25s, box-shadow .25s, border-color .25s;
-    }
-    .ccard:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); border-color:rgba(255,255,255,.12); }
-    .cglow { position:absolute; top:-40px;right:-40px; width:120px;height:120px; border-radius:50%; opacity:.08; pointer-events:none; }
-    .ctop { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
-    .cname { font-size:.95rem; font-weight:700; }
-    .badge { font-size:.6rem; font-weight:700; letter-spacing:.04em; padding:3px 8px; border-radius:100px; text-transform:uppercase; }
-    .badge-ongoing { background:rgba(251,146,60,.15); color:var(--orange); border:1px solid rgba(251,146,60,.3); animation:pulse-b 2.5s ease-in-out infinite; }
-    .badge-done    { background:rgba(74,222,128,.1);  color:var(--green);  border:1px solid rgba(74,222,128,.2); }
-    @keyframes pulse-b { 0%,100%{opacity:1} 50%{opacity:.6} }
-    .cnums { display:flex; align-items:baseline; gap:3px; margin-bottom:9px; }
-    .cdone { font-size:1.8rem; font-weight:800; line-height:1; letter-spacing:-1px; }
-    .ctotal { font-size:.9rem; color:var(--muted); font-weight:500; }
-    .cunit  { font-size:.75rem; color:var(--muted); margin-left:1px; }
-    .ctrack { background:rgba(255,255,255,.06); border-radius:100px; height:5px; overflow:hidden; margin-bottom:9px; }
-    .cfill  { height:100%; border-radius:100px; transition:width 1.4s cubic-bezier(.4,0,.2,1); }
-    .cmeta  { display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted); }
-    .cpct   { font-weight:700; }
+    /* COURSE CARDS */
+    .course-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .ccard{display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+    .ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    /* SVG circular progress */
+    .circ-wrap{position:relative;width:62px;height:62px;flex-shrink:0}
+    .circ-svg{width:62px;height:62px;transform:rotate(-90deg)}
+    .circ-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:3.5}
+    .circ-fg{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:0 100;transition:stroke-dasharray 1.3s cubic-bezier(.4,0,.2,1)}
+    .circ-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;line-height:1}
+    .cinfo{flex:1;min-width:0}
+    .cname{font-size:.82rem;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cnums{font-size:.75rem;color:var(--muted)}
+    .cnums b{color:var(--text);font-weight:700}
+    .badge{font-size:.55rem;font-weight:700;letter-spacing:.04em;padding:2px 6px;border-radius:100px;text-transform:uppercase}
+    .badge-on{background:rgba(251,146,60,.15);color:var(--orange);border:1px solid rgba(251,146,60,.3);animation:pb 2.5s ease-in-out infinite}
+    .badge-done{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+    @keyframes pb{0%,100%{opacity:1}50%{opacity:.6}}
 
     /* 원가관리 편집 */
-    .cost-edit { display:flex; align-items:center; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
-    .cost-edit label { font-size:.68rem; color:var(--muted); white-space:nowrap; }
-    .cost-input {
-      width:58px; background:var(--s2); border:1px solid var(--border);
-      border-radius:6px; color:var(--text); font-size:.8rem; font-weight:600;
-      padding:4px 8px; font-family:inherit; text-align:center;
-    }
-    .cost-input:focus { outline:none; border-color:var(--accent); }
-    .btn-save { padding:4px 10px; font-size:.7rem; border-radius:6px; background:rgba(99,102,241,.15); color:var(--accent2); border:1px solid rgba(99,102,241,.3); cursor:pointer; font-family:inherit; font-weight:600; transition:all .2s; }
-    .btn-save:hover { background:rgba(99,102,241,.25); }
+    .cost-edit{display:flex;align-items:center;gap:5px;margin-top:6px}
+    .cost-input{width:50px;background:var(--s2);border:1px solid var(--bd);border-radius:5px;color:var(--text);font-size:.72rem;font-weight:600;padding:3px 6px;font-family:inherit;text-align:center}
+    .cost-input:focus{outline:none;border-color:var(--accent)}
+    .btn-save{padding:3px 8px;font-size:.65rem;border-radius:5px;background:rgba(99,102,241,.15);color:var(--a2);border:1px solid rgba(99,102,241,.3);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s}
+    .cost-label{font-size:.62rem;color:var(--muted)}
 
-    /* ── SETTINGS AREA ── */
-    .settings-row { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-bottom:20px; }
-    .current-id { font-size:.75rem; color:var(--muted); }
-    .current-id b { color:var(--text); }
+    /* WEEKDAY/WEEKEND */
+    .ww-card{display:flex;gap:0;margin-bottom:14px}
+    .ww-side{flex:1;padding:12px 14px;border-right:1px solid var(--bd)}
+    .ww-side:last-child{border-right:none}
+    .ww-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+    .ww-val{font-size:1rem;font-weight:800}
+    .ww-sub{font-size:.65rem;color:var(--muted);margin-top:2px}
 
-    /* ── ERRORS ── */
-    .err-box { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.2); border-radius:12px; padding:12px 16px; margin-bottom:20px; font-size:.78rem; color:var(--red); }
+    /* WHAT-IF CALCULATOR */
+    .wi-card{margin-bottom:18px}
+    .wi-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px}
+    .wi-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .wi-label{font-size:.78rem;color:var(--muted);white-space:nowrap}
+    .wi-radios{display:flex;gap:6px}
+    .wi-radio{display:flex;align-items:center;gap:4px;font-size:.75rem;cursor:pointer;color:var(--text)}
+    .wi-radio input{accent-color:var(--accent)}
+    .wi-input{width:60px;background:var(--s2);border:1px solid var(--bd);border-radius:7px;color:var(--text);font-size:.85rem;font-weight:700;padding:6px 10px;font-family:inherit;text-align:center;outline:none;transition:border-color .2s}
+    .wi-input:focus{border-color:var(--accent)}
+    .wi-suffix{font-size:.75rem;color:var(--muted)}
+    .wi-result{margin-top:10px;padding:10px 14px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:9px;font-size:.82rem;font-weight:600;color:var(--a2);display:none}
 
-    /* ── FOOTER ── */
-    footer { text-align:center; padding:20px 0 36px; font-size:.7rem; color:var(--muted); border-top:1px solid var(--border); }
+    /* ERR */
+    .err-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.75rem;color:var(--red)}
 
-    /* ── TOAST ── */
-    #toast { position:fixed; bottom:24px; right:24px; padding:11px 18px; border-radius:10px; font-size:.8rem; font-weight:600; background:var(--s2); border:1px solid var(--border); color:var(--text); box-shadow:0 8px 30px rgba(0,0,0,.4); transform:translateY(60px); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); z-index:200; }
-    #toast.show { transform:translateY(0); opacity:1; }
+    /* TOAST */
+    #toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:9px;font-size:.78rem;font-weight:600;background:var(--s2);border:1px solid var(--bd);color:var(--text);box-shadow:0 8px 30px rgba(0,0,0,.4);transform:translateY(60px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:200}
+    #toast.show{transform:translateY(0);opacity:1}
+    .spin{display:inline-block;animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    .spin { display:inline-block; animation:spin .9s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
+    footer{text-align:center;padding:16px 0 28px;font-size:.65rem;color:var(--muted);border-top:1px solid var(--bd)}
 
-    /* ── NO DATA ── */
-    .no-data { text-align:center; padding:60px 20px; }
-    .no-data .icon { font-size:2.5rem; margin-bottom:14px; }
+    .section-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px}
   </style>
 </head>
 <body>
 
-<!-- ── 로그인 설정 오버레이 ── -->
-<div id="setup-overlay" class="{{ 'hidden' if logged_in else '' }}">
+<!-- SETUP OVERLAY -->
+<div id="setup-ov" class="{{ 'hidden' if logged_in else '' }}">
   <div class="setup-card">
-    <h2>🔐 로그인 정보 입력</h2>
-    <p>우리경영아카데미 아이디와 비밀번호를 입력하세요.<br>정보는 서버에만 저장되고 외부로 전송되지 않습니다.</p>
-    <div class="form-group">
-      <label for="setup-id">아이디</label>
-      <input type="text" id="setup-id" placeholder="아이디 입력" autocomplete="username" />
-    </div>
-    <div class="form-group">
-      <label for="setup-pw">비밀번호</label>
-      <input type="password" id="setup-pw" placeholder="비밀번호 입력" autocomplete="current-password" />
-    </div>
-    <button class="btn btn-primary setup-submit" id="setup-btn" onclick="submitSetup()">저장 후 스크래핑 시작</button>
+    <h2>🔐 로그인 정보</h2>
+    <p>우리경영아카데미 아이디/비밀번호.<br>서버에만 저장, 외부 전송 없음.</p>
+    <div class="fg"><label>아이디</label><input type="text" id="si" placeholder="아이디" autocomplete="username"/></div>
+    <div class="fg"><label>비밀번호</label><input type="password" id="sp" placeholder="비밀번호" autocomplete="current-password"/></div>
+    <button class="btn btn-p" style="width:100%;padding:11px;font-size:.85rem;border-radius:9px;margin-top:4px" id="setup-btn" onclick="submitSetup()">저장 후 스크래핑 시작</button>
     <div class="setup-err" id="setup-err"></div>
   </div>
 </div>
 
-<div class="wrap">
+<div class="w">
 
-  <!-- ── HEADER ── -->
-  <header>
-    <div class="hdr">
-      <div>
-        <h1>📚 강의 진도 트래커</h1>
-        <p>CTA 2차 대비 · 우리경영아카데미</p>
-      </div>
-      <div class="hdr-right">
-        {% if data and data.scraped_at %}
-        <span class="last-upd">갱신: <b>{{ data.scraped_at[:16].replace('T',' ') }}</b></span>
-        {% endif %}
-        <button class="btn btn-primary" id="refresh-btn" onclick="triggerRefresh()">
-          <span id="refresh-icon">↺</span> 갱신
-        </button>
-        {% if logged_in %}
-        <button class="btn btn-ghost" onclick="showSetup()" title="계정 변경">⚙️</button>
-        {% endif %}
-      </div>
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div>
+      <h1>📚 강의 진도 트래커</h1>
+      <div class="hdr-sub">CTA 2차 · 우리경영아카데미{% if data and data.cutoff %} · 기준: {{ data.cutoff }}{% if data.cutoff == data.today %} (오늘포함){% endif %}{% endif %}</div>
     </div>
-  </header>
+    <div class="hdr-right">
+      {% if data and data.scraped_at %}<span class="last-upd">{{ data.scraped_at[:16].replace('T',' ') }}</span>{% endif %}
+      <button class="btn btn-p" id="refresh-btn" onclick="triggerRefresh()"><span id="ri">↺</span> 갱신</button>
+      {% if logged_in %}<button class="btn btn-g" onclick="showSetup()" title="계정">⚙️</button>{% endif %}
+    </div>
+  </div>
+</header>
 
-  {% if not logged_in or not data %}
-  <div class="no-data">
-    <div class="icon">⏳</div>
-    <h2 style="margin-bottom:8px;">
-      {% if not logged_in %}로그인 정보를 입력해주세요{% else %}스크래핑 중...{% endif %}
-    </h2>
-    <p style="color:var(--muted);font-size:.85rem;">
-      {% if logged_in %}첫 데이터를 가져오고 있습니다. 30초 후 새로고침하세요.{% endif %}
-    </p>
-    {% if logged_in %}
-    <br><button class="btn btn-primary" onclick="location.reload()">새로고침</button>
+{% if not logged_in or not data %}
+<div style="text-align:center;padding:60px 20px">
+  <div style="font-size:2.2rem;margin-bottom:12px">⏳</div>
+  <h2 style="margin-bottom:8px;font-size:1.1rem">{% if not logged_in %}로그인 정보를 입력해주세요{% else %}스크래핑 중... (30초){% endif %}</h2>
+  {% if logged_in %}<br><button class="btn btn-p" onclick="location.reload()">새로고침</button>{% endif %}
+</div>
+
+{% else %}
+
+{% if data.errors %}
+<div class="err-box">⚠️ 실패: {% for e in data.errors %}{{ e.course }}{% if not loop.last %}, {% endif %}{% endfor %} — 갱신 재시도</div>
+{% endif %}
+
+<!-- SUMMARY -->
+<div class="card summary-card">
+  <div class="sum-row">
+    <div class="sum-item">
+      <div class="si-label">전체진도</div>
+      <div class="si-val" style="background:linear-gradient(135deg,var(--a2),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">{{ data.overall_pct }}<span class="u">%</span></div>
+    </div>
+    <div class="sum-item">
+      <div class="si-label">완료</div>
+      <div class="si-val" style="color:var(--green)">{{ data.total_completed }}<span class="u">강</span></div>
+      <div class="si-sub">/ {{ data.total_lectures }}강</div>
+    </div>
+    <div class="sum-item">
+      <div class="si-label">잔여</div>
+      <div class="si-val" style="color:var(--orange)">{{ data.remaining }}<span class="u">강</span></div>
+      <div class="si-sub">≈ {{ data.remaining_hours }}h</div>
+    </div>
+    <div class="sum-item">
+      <div class="si-label">경과</div>
+      <div class="si-val" style="color:var(--muted);font-size:1.1rem">{{ data.days_elapsed }}<span class="u">일</span></div>
+      <div class="si-sub">{{ data.first_date }}</div>
+    </div>
+  </div>
+  <div class="pbar-wrap">
+    <div class="pbar-hdr"><span>진도바</span><b>{{ data.overall_pct }}%</b></div>
+    <div class="track"><div class="fill" id="overall-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- PACE -->
+<div class="section-label">페이스별 완강 예상</div>
+<div class="pace-grid">
+
+  <!-- 강의 기준 -->
+  <div class="card pace-card pc-lec">
+    <div class="pace-title">📊 강의 기준 (강/일)</div>
+    <div class="pace-row">
+      <span class="pr-tag">전체</span>
+      <span class="pr-val" style="color:var(--a2)">{% if data.daily_avg %}{{ data.daily_avg }}강{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish %}{{ data.expected_finish }} D-{{ data.days_to_finish }}{% else %}—{% endif %}</span>
+    </div>
+    <div class="pace-row">
+      <span class="pr-tag">7일</span>
+      <span class="pr-val" style="color:var(--blue)">{% if data.pace_7d %}{{ data.pace_7d }}강{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_7d %}{{ data.expected_finish_7d }} D-{{ data.days_to_finish_7d }}{% else %}—{% endif %}</span>
+    </div>
+    <div class="pace-row">
+      <span class="pr-tag">3일</span>
+      <span class="pr-val" style="color:var(--green)">{% if data.pace_3d %}{{ data.pace_3d }}강{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_3d %}{{ data.expected_finish_3d }} D-{{ data.days_to_finish_3d }}{% else %}—{% endif %}</span>
+    </div>
+  </div>
+
+  <!-- 시간 기준 -->
+  <div class="card pace-card pc-time">
+    <div class="pace-title">⏱ 시간 기준 (h/일)</div>
+    <div class="pace-row">
+      <span class="pr-tag">7일</span>
+      <span class="pr-val" style="color:var(--blue)">{% if data.pace_7d_hours %}{{ data.pace_7d_hours }}h{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_7d_h %}{{ data.expected_finish_7d_h }} D-{{ data.days_to_finish_7d_h }}{% else %}—{% endif %}</span>
+    </div>
+    <div class="pace-row">
+      <span class="pr-tag">3일</span>
+      <span class="pr-val" style="color:var(--green)">{% if data.pace_3d_hours %}{{ data.pace_3d_hours }}h{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_3d_h %}{{ data.expected_finish_3d_h }} D-{{ data.days_to_finish_3d_h }}{% else %}—{% endif %}</span>
+    </div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-size:.65rem;color:var(--muted)">
+      잔여 {{ data.remaining_hours }}h · 완료강의 실제시간 기준
+    </div>
+  </div>
+
+</div>
+
+<!-- COURSES -->
+<div class="section-label">과목별 현황</div>
+<div class="course-grid">
+{% for c in data.courses %}
+<div class="card ccard" style="--cc:{{ c.color }}">
+  <style>.ccard[style*="{{ c.color }}"]::before{background:linear-gradient(90deg,{{ c.color }}88,{{ c.color }})}</style>
+  <div class="circ-wrap">
+    <svg class="circ-svg" viewBox="0 0 36 36">
+      <circle class="circ-bg" cx="18" cy="18" r="15.9"/>
+      <circle class="circ-fg" id="circ-{{ c.id }}" cx="18" cy="18" r="15.9" stroke="{{ c.color }}"/>
+    </svg>
+    <div class="circ-pct" style="color:{{ c.color }}">{{ c.progress_pct }}<span style="font-size:.55rem">%</span></div>
+  </div>
+  <div class="cinfo">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+      <div class="cname">{{ c.name }}</div>
+      {% if c.ongoing %}<span class="badge badge-on">실강중</span>{% else %}<span class="badge badge-done">완강</span>{% endif %}
+    </div>
+    <div class="cnums"><b>{{ c.completed }}</b> / {{ c.total_lectures }}강 · 잔여 {{ [0, c.total_lectures - c.completed] | max }}강</div>
+    {% if c.id == 'cost' %}
+    <div class="cost-edit">
+      <span class="cost-label">총:</span>
+      <input type="number" id="cost-inp" class="cost-input" value="{{ cost_total }}" min="1" max="300"/>
+      <button class="btn-save" onclick="saveCostTotal()">저장</button>
+    </div>
     {% endif %}
   </div>
+</div>
+{% endfor %}
+</div>
 
-  {% else %}
-
-  {% if data.errors %}
-  <div class="err-box">⚠️ 일부 과목 실패:
-    {% for e in data.errors %}{{ e.course }}{% if not loop.last %}, {% endif %}{% endfor %}
-    — 갱신 버튼 재시도
+<!-- WEEKDAY/WEEKEND -->
+{% set ws = data.weekday_stats %}
+<div class="section-label">평일 / 주말 분석</div>
+<div class="card ww-card" style="padding:0;overflow:hidden;margin-bottom:14px">
+  <div class="ww-side">
+    <div class="ww-label">📅 평일 ({{ ws.weekday_days }}일)</div>
+    <div class="ww-val" style="color:var(--blue)">{% if ws.weekday_avg_lecs %}{{ ws.weekday_avg_lecs }}강{% else %}—{% endif %}</div>
+    <div class="ww-sub">{% if ws.weekday_avg_hours %}{{ ws.weekday_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
   </div>
-  {% endif %}
-
-  <!-- ── TOP STATS ── -->
-  <div class="stat-grid">
-    <div class="stat-card sc-purple">
-      <div class="sl">📊 전체 진도</div>
-      <div class="sv" style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-        {{ data.overall_pct }}<span class="u">%</span>
-      </div>
-      <div class="ss"><b>{{ data.total_completed }}</b> / {{ data.total_lectures }}강</div>
-    </div>
-    <div class="stat-card sc-green">
-      <div class="sl">✅ 완료 강의</div>
-      <div class="sv" style="color:var(--green);">{{ data.total_completed }}<span class="u">강</span></div>
-      <div class="ss">잔여 <b>{{ data.remaining }}</b>강</div>
-    </div>
-    <div class="stat-card sc-blue">
-      <div class="sl">📅 수강 시작일</div>
-      <div class="sv" style="color:var(--blue);font-size:1.1rem;letter-spacing:-.5px;">
-        {{ data.first_date if data.first_date else '—' }}
-      </div>
-      <div class="ss">경과 <b>{{ data.days_elapsed }}</b>일</div>
-    </div>
+  <div class="ww-side">
+    <div class="ww-label">🏖 주말 ({{ ws.weekend_days }}일)</div>
+    <div class="ww-val" style="color:var(--orange)">{% if ws.weekend_avg_lecs %}{{ ws.weekend_avg_lecs }}강{% else %}—{% endif %}</div>
+    <div class="ww-sub">{% if ws.weekend_avg_hours %}{{ ws.weekend_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
   </div>
+</div>
 
-  <!-- ── PACE CARDS ── -->
-  <div class="pace-section">
-    <div class="section-title">📈 페이스별 완강 예상일</div>
-    <div class="pace-grid">
-
-      <!-- 전체 평균 -->
-      <div class="pace-card pc-all">
-        <div class="pace-label">전체 평균 <span style="font-weight:400;opacity:.6;">(시작~어제)</span></div>
-        {% if data.daily_avg %}
-        <div class="pace-avg" style="color:var(--accent2);">{{ data.daily_avg }}<span class="u">강/일</span></div>
-        <div class="pace-detail">
-          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish }}일</span></div>
-          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--accent2);">{{ data.expected_finish }}</span></div>
-        </div>
-        {% else %}
-        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
-        {% endif %}
-      </div>
-
-      <!-- 최근 7일 -->
-      <div class="pace-card pc-7d">
-        <div class="pace-label">최근 7일 페이스</div>
-        {% if data.pace_7d %}
-        <div class="pace-avg" style="color:var(--blue);">{{ data.pace_7d }}<span class="u">강/일</span></div>
-        <div class="pace-detail">
-          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish_7d }}일</span></div>
-          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--blue);">{{ data.expected_finish_7d }}</span></div>
-        </div>
-        {% else %}
-        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
-        {% endif %}
-      </div>
-
-      <!-- 최근 3일 -->
-      <div class="pace-card pc-3d">
-        <div class="pace-label">최근 3일 페이스</div>
-        {% if data.pace_3d %}
-        <div class="pace-avg" style="color:var(--green);">{{ data.pace_3d }}<span class="u">강/일</span></div>
-        <div class="pace-detail">
-          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish_3d }}일</span></div>
-          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--green);">{{ data.expected_finish_3d }}</span></div>
-        </div>
-        {% else %}
-        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
-        {% endif %}
-      </div>
-
+<!-- WHAT-IF CALCULATOR -->
+<div class="section-label">💡 주말 추가 학습 시뮬레이터</div>
+<div class="card wi-card">
+  <div class="wi-title">주말에 하루 더 들으면 완강일이 얼마나 당겨질까?</div>
+  <div class="wi-row">
+    <span class="wi-label">기준:</span>
+    <div class="wi-radios">
+      <label class="wi-radio"><input type="radio" name="wi-type" value="lec" checked> 강의수</label>
+      <label class="wi-radio"><input type="radio" name="wi-type" value="hr"> 시간</label>
     </div>
+    <span class="wi-label">추가:</span>
+    <input type="number" id="wi-extra" class="wi-input" placeholder="0" min="0" step="0.5"/>
+    <span class="wi-suffix" id="wi-sfx">강/일</span>
+    <button class="btn btn-p" style="padding:6px 14px;font-size:.75rem" onclick="calcWhatIf()">계산</button>
   </div>
+  <div class="wi-result" id="wi-result"></div>
+</div>
 
-  <!-- ── OVERALL BAR ── -->
-  <div class="overall-wrap">
-    <div class="overall-hdr">
-      <h2>전체 진도</h2>
-      <span class="overall-pct">{{ data.overall_pct }}%</span>
-    </div>
-    <div class="track">
-      <div class="fill" id="overall-bar" style="width:0%"></div>
-    </div>
-  </div>
+{% endif %}
 
-  <!-- ── COURSE CARDS ── -->
-  <div class="section-title">과목별 현황</div>
-  <div class="course-grid">
-    {% for c in data.courses %}
-    <div class="ccard">
-      <div class="cglow" style="background:{{ c.color }};"></div>
-      <div class="ctop">
-        <div class="cname">{{ c.name }}</div>
-        {% if c.ongoing %}
-        <span class="badge badge-ongoing">실강중</span>
-        {% else %}
-        <span class="badge badge-done">완강</span>
-        {% endif %}
-      </div>
-      <div class="cnums">
-        <span class="cdone" style="color:{{ c.color }};">{{ c.completed }}</span>
-        <span class="ctotal"> / {{ c.total_lectures }}</span>
-        <span class="cunit">강</span>
-      </div>
-      <div class="ctrack">
-        <div class="cfill" id="bar-{{ c.id }}" style="background:{{ c.color }};opacity:.85;width:0%;"></div>
-      </div>
-      <div class="cmeta">
-        <span class="cpct" style="color:{{ c.color }};">{{ c.progress_pct }}%</span>
-        <span>잔여 {{ [0, c.total_lectures - c.completed] | max }}강</span>
-      </div>
-      {% if c.id == 'cost' %}
-      <div class="cost-edit">
-        <label for="cost-inp">총 강의수:</label>
-        <input type="number" id="cost-inp" class="cost-input" value="{{ cost_total }}" min="1" max="300" />
-        <button class="btn-save" onclick="saveCostTotal()">저장</button>
-        <span id="cost-msg" style="font-size:.67rem;color:var(--green);display:none;">✓</span>
-      </div>
-      {% endif %}
-    </div>
-    {% endfor %}
-  </div>
-
-  {% endif %}
-
-  <footer>강의 트래커 · 1시간마다 자동 갱신 · 오늘 제외 기준</footer>
+<footer>강의 트래커 · 1시간 자동갱신 · 23시 이후 당일분 포함</footer>
 </div>
 
 <div id="toast"></div>
 
 <script>
-  // ── 진도바 애니메이션 ──
-  const bars = {
-    {% if data %}
-    {% for c in data.courses %}'{{ c.id }}': {{ c.progress_pct }},{% endfor %}
-    {% endif %}
-  };
-  setTimeout(() => {
-    for (const [id, pct] of Object.entries(bars)) {
-      const el = document.getElementById('bar-' + id);
-      if (el) el.style.width = pct + '%';
-    }
-    const ob = document.getElementById('overall-bar');
-    if (ob) ob.style.width = '{{ data.overall_pct if data else 0 }}%';
-  }, 200);
+// ── 데이터 ──
+const D = {
+  remaining:    {{ data.remaining       if data else 0 }},
+  remHours:     {{ data.remaining_hours if data else 0 }},
+  today:        '{{ data.today          if data else "" }}',
+  overallPct:   {{ data.overall_pct     if data else 0 }},
+  daysToFinish: {{ data.days_to_finish  if data else 'null' }},
+  ws: {
+    wdLec: {{ (data.weekday_stats.weekday_avg_lecs  or 0) if data else 0 }},
+    weLec: {{ (data.weekday_stats.weekend_avg_lecs  or 0) if data else 0 }},
+    wdHrs: {{ (data.weekday_stats.weekday_avg_hours or 0) if data else 0 }},
+    weHrs: {{ (data.weekday_stats.weekend_avg_hours or 0) if data else 0 }},
+  },
+};
 
-  // ── 설정 오버레이 ──
-  function showSetup() {
-    document.getElementById('setup-overlay').classList.remove('hidden');
+// ── 원형 진도바 ──
+const circs = {
+  {% if data %}{% for c in data.courses %}'{{ c.id }}': { pct: {{ c.progress_pct }}, color: '{{ c.color }}' },{% endfor %}{% endif %}
+};
+setTimeout(() => {
+  for (const [id, info] of Object.entries(circs)) {
+    const el = document.getElementById('circ-' + id);
+    if (el) el.style.strokeDasharray = `${info.pct} ${100 - info.pct}`;
   }
-  function hideSetup() {
-    document.getElementById('setup-overlay').classList.add('hidden');
-  }
+  const ob = document.getElementById('overall-bar');
+  if (ob) ob.style.width = D.overallPct + '%';
+}, 250);
 
-  async function submitSetup() {
-    const id  = document.getElementById('setup-id').value.trim();
-    const pw  = document.getElementById('setup-pw').value.trim();
-    const err = document.getElementById('setup-err');
-    const btn = document.getElementById('setup-btn');
-    if (!id || !pw) { err.textContent = '아이디와 비밀번호를 모두 입력하세요.'; return; }
-    btn.disabled = true;
-    btn.textContent = '저장 중...';
-    err.textContent = '';
-    try {
-      const res = await fetch('/api/setup', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({id, pw}),
-      });
-      const data = await res.json();
-      if (!res.ok) { err.textContent = data.error || '오류 발생'; btn.disabled=false; btn.textContent='저장 후 스크래핑 시작'; return; }
-      hideSetup();
-      showToast('✅ 저장됨. 30초 후 새로고침하세요.');
-      setTimeout(() => location.reload(), 32000);
-    } catch(e) {
-      err.textContent = '네트워크 오류';
-      btn.disabled = false;
-      btn.textContent = '저장 후 스크래핑 시작';
-    }
-  }
+// ── 라디오 suffix ──
+document.querySelectorAll('input[name="wi-type"]').forEach(r =>
+  r.addEventListener('change', () => {
+    document.getElementById('wi-sfx').textContent = r.value === 'lec' ? '강/일' : 'h/일';
+  })
+);
 
-  // Enter 키 지원
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !document.getElementById('setup-overlay').classList.contains('hidden')) {
-      submitSetup();
-    }
-  });
-
-  // ── 갱신 ──
-  let refreshing = false;
-  async function triggerRefresh() {
-    if (refreshing) return;
-    refreshing = true;
-    const btn  = document.getElementById('refresh-btn');
-    const icon = document.getElementById('refresh-icon');
-    btn.disabled = true;
-    icon.classList.add('spin');
-    showToast('🔄 스크래핑 시작... 약 30초 후 자동 새로고침');
-    try {
-      const res = await fetch('/api/refresh', {method:'POST'});
-      if (!res.ok) { const d=await res.json(); showToast('❌ '+d.error, true); btn.disabled=false; icon.classList.remove('spin'); refreshing=false; return; }
-      setTimeout(() => location.reload(), 35000);
-    } catch(e) {
-      showToast('❌ 네트워크 오류', true);
-      btn.disabled=false; icon.classList.remove('spin'); refreshing=false;
-    }
+// ── What-if ──
+function calcWhatIf() {
+  const type  = document.querySelector('input[name="wi-type"]:checked').value;
+  const extra = parseFloat(document.getElementById('wi-extra').value);
+  if (isNaN(extra) || extra < 0) { showToast('숫자를 입력하세요', true); return; }
+  const {wdLec, weLec, wdHrs, weHrs} = D.ws;
+  let newDaily, rem;
+  if (type === 'lec') {
+    const newWeek = wdLec * 5 + (weLec + extra) * 2;
+    newDaily = newWeek / 7; rem = D.remaining;
+  } else {
+    const newWeekH = wdHrs * 5 + (weHrs + extra) * 2;
+    newDaily = newWeekH / 7; rem = D.remHours;
   }
+  if (!newDaily || newDaily <= 0) { showToast('현재 페이스 데이터가 부족합니다', true); return; }
+  const days = Math.ceil(rem / newDaily);
+  const finish = new Date(D.today);
+  finish.setDate(finish.getDate() + days);
+  const finStr = finish.toISOString().slice(0, 10);
+  const saved = D.daysToFinish ? D.daysToFinish - days : null;
+  const diffStr = saved !== null ? (saved > 0 ? ` · ${saved}일 단축 🎉` : saved < 0 ? ` · ${-saved}일 지연` : ' · 변화 없음') : '';
+  const el = document.getElementById('wi-result');
+  el.style.display = 'block';
+  el.textContent = `완강 예상: ${finStr} (D-${days})${diffStr}`;
+}
 
-  // ── 원가관리 총 강의수 ──
-  async function saveCostTotal() {
-    const n   = parseInt(document.getElementById('cost-inp').value);
-    const msg = document.getElementById('cost-msg');
-    if (!n || n < 1) { showToast('❌ 유효한 숫자 입력', true); return; }
-    const res = await fetch('/api/cost-total', {
-      method:'PATCH', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({total: n}),
-    });
-    if (!res.ok) { showToast('❌ 저장 실패', true); return; }
-    showToast(`✅ 원가관리 총 강의수: ${n}강`);
-    msg.style.display='inline';
-    setTimeout(() => { msg.style.display='none'; location.reload(); }, 1500);
-  }
+// ── 갱신 ──
+let refreshing = false;
+async function triggerRefresh() {
+  if (refreshing) return; refreshing = true;
+  const btn = document.getElementById('refresh-btn'), icon = document.getElementById('ri');
+  btn.disabled = true; icon.classList.add('spin');
+  showToast('🔄 스크래핑 시작... 약 30초');
+  try {
+    const res = await fetch('/api/refresh', {method:'POST'});
+    if (!res.ok) { const d=await res.json(); showToast('❌ '+(d.error||'오류'), true); reset(); return; }
+    setTimeout(() => location.reload(), 35000);
+  } catch { showToast('❌ 네트워크 오류', true); reset(); }
+  function reset() { btn.disabled=false; icon.classList.remove('spin'); refreshing=false; }
+}
 
-  // ── 토스트 ──
-  let tt;
-  function showToast(msg, isErr=false) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.style.background = isErr ? 'rgba(239,68,68,.15)' : 'var(--s2)';
-    el.style.borderColor = isErr ? 'rgba(239,68,68,.3)' : 'var(--border)';
-    el.classList.add('show');
-    clearTimeout(tt);
-    tt = setTimeout(() => el.classList.remove('show'), 4500);
-  }
+// ── 설정 ──
+function showSetup() { document.getElementById('setup-ov').classList.remove('hidden'); }
+async function submitSetup() {
+  const id=document.getElementById('si').value.trim(), pw=document.getElementById('sp').value.trim();
+  const err=document.getElementById('setup-err'), btn=document.getElementById('setup-btn');
+  if (!id||!pw) { err.textContent='아이디와 비밀번호를 입력하세요.'; return; }
+  btn.disabled=true; btn.textContent='저장 중...'; err.textContent='';
+  try {
+    const res = await fetch('/api/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,pw})});
+    const d = await res.json();
+    if (!res.ok) { err.textContent=d.error||'오류'; btn.disabled=false; btn.textContent='저장 후 스크래핑 시작'; return; }
+    document.getElementById('setup-ov').classList.add('hidden');
+    showToast('✅ 저장됨. 30초 후 자동 새로고침');
+    setTimeout(() => location.reload(), 32000);
+  } catch { err.textContent='네트워크 오류'; btn.disabled=false; btn.textContent='저장 후 스크래핑 시작'; }
+}
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && !document.getElementById('setup-ov').classList.contains('hidden')) submitSetup();
+});
+
+// ── 원가관리 저장 ──
+async function saveCostTotal() {
+  const n = parseInt(document.getElementById('cost-inp').value);
+  if (!n||n<1) { showToast('유효한 숫자 입력', true); return; }
+  const res = await fetch('/api/cost-total',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({total:n})});
+  if (!res.ok) { showToast('❌ 저장 실패', true); return; }
+  showToast(`✅ 원가관리 ${n}강으로 저장`);
+  setTimeout(() => location.reload(), 1200);
+}
+
+// ── 토스트 ──
+let tt;
+function showToast(msg, isErr=false) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.background=isErr?'rgba(239,68,68,.15)':'var(--s2)'; el.style.borderColor=isErr?'rgba(239,68,68,.3)':'var(--bd)';
+  el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),4500);
+}
 </script>
 </body>
 </html>
