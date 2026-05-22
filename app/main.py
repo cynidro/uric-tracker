@@ -62,7 +62,18 @@ def run_scrape():
 def load_cached() -> dict | None:
     if DATA_FILE.exists():
         try:
-            return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+            data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+            # 구버전 캐시 감지 → 재계산
+            if data and "weekday_stats" not in data and "courses" in data:
+                logger.info("구버전 캐시 감지 — 재계산 중...")
+                result = calculate_progress(data["courses"])
+                result["errors"]     = data.get("errors", [])
+                result["scraped_at"] = data.get("scraped_at", "")
+                DATA_FILE.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
+                )
+                return result
+            return data
         except Exception:
             return None
     return None

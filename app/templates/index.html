@@ -277,7 +277,7 @@
       <div class="cname">{{ c.name }}</div>
       {% if c.ongoing %}<span class="badge badge-on">실강중</span>{% else %}<span class="badge badge-done">완강</span>{% endif %}
     </div>
-    <div class="cnums"><b>{{ c.completed }}</b> / {{ c.total_lectures }}강 · 잔여 {{ [0, c.total_lectures - c.completed] | max }}강</div>
+    <div class="cnums"><b>{{ c.completed }}</b> / {{ c.total_lectures }}강 · 잔여 {{ [c.total_lectures - c.completed, 0] | max }}강</div>
     {% if c.id == 'cost' %}
     <div class="cost-edit">
       <span class="cost-label">총:</span>
@@ -291,18 +291,18 @@
 </div>
 
 <!-- WEEKDAY/WEEKEND -->
-{% set ws = data.weekday_stats %}
+{% set ws = data.weekday_stats if data.weekday_stats else {} %}
 <div class="section-label">평일 / 주말 분석</div>
 <div class="card ww-card" style="padding:0;overflow:hidden;margin-bottom:14px">
   <div class="ww-side">
-    <div class="ww-label">📅 평일 ({{ ws.weekday_days }}일)</div>
-    <div class="ww-val" style="color:var(--blue)">{% if ws.weekday_avg_lecs %}{{ ws.weekday_avg_lecs }}강{% else %}—{% endif %}</div>
-    <div class="ww-sub">{% if ws.weekday_avg_hours %}{{ ws.weekday_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
+    <div class="ww-label">📅 평일 ({{ ws.get('weekday_days', 0) }}일)</div>
+    <div class="ww-val" style="color:var(--blue)">{% if ws.get('weekday_avg_lecs') %}{{ ws.weekday_avg_lecs }}강{% else %}—{% endif %}</div>
+    <div class="ww-sub">{% if ws.get('weekday_avg_hours') %}{{ ws.weekday_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
   </div>
   <div class="ww-side">
-    <div class="ww-label">🏖 주말 ({{ ws.weekend_days }}일)</div>
-    <div class="ww-val" style="color:var(--orange)">{% if ws.weekend_avg_lecs %}{{ ws.weekend_avg_lecs }}강{% else %}—{% endif %}</div>
-    <div class="ww-sub">{% if ws.weekend_avg_hours %}{{ ws.weekend_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
+    <div class="ww-label">🏖 주말 ({{ ws.get('weekend_days', 0) }}일)</div>
+    <div class="ww-val" style="color:var(--orange)">{% if ws.get('weekend_avg_lecs') %}{{ ws.weekend_avg_lecs }}강{% else %}—{% endif %}</div>
+    <div class="ww-sub">{% if ws.get('weekend_avg_hours') %}{{ ws.weekend_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
   </div>
 </div>
 
@@ -340,10 +340,10 @@ const D = {
   overallPct:   {{ data.overall_pct     if data else 0 }},
   daysToFinish: {{ data.days_to_finish  if data else 'null' }},
   ws: {
-    wdLec: {{ (data.weekday_stats.weekday_avg_lecs  or 0) if data else 0 }},
-    weLec: {{ (data.weekday_stats.weekend_avg_lecs  or 0) if data else 0 }},
-    wdHrs: {{ (data.weekday_stats.weekday_avg_hours or 0) if data else 0 }},
-    weHrs: {{ (data.weekday_stats.weekend_avg_hours or 0) if data else 0 }},
+    wdLec: {{ ((data.weekday_stats or {}).get('weekday_avg_lecs')  or 0) if data else 0 }},
+    weLec: {{ ((data.weekday_stats or {}).get('weekend_avg_lecs')  or 0) if data else 0 }},
+    wdHrs: {{ ((data.weekday_stats or {}).get('weekday_avg_hours') or 0) if data else 0 }},
+    weHrs: {{ ((data.weekday_stats or {}).get('weekend_avg_hours') or 0) if data else 0 }},
   },
 };
 
