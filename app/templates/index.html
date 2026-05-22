@@ -10,601 +10,391 @@
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:         #0b0f1a;
-      --surface:    #111827;
-      --surface2:   #1a2235;
-      --border:     rgba(255,255,255,0.07);
-      --text:       #e2e8f0;
-      --muted:      #64748b;
-      --accent:     #6366f1;
-      --accent2:    #818cf8;
-      --green:      #4ade80;
-      --orange:     #fb923c;
-      --blue:       #38bdf8;
-      --purple:     #c084fc;
-      --red:        #f87171;
-      --gold:       #fbbf24;
+      --bg:      #0b0f1a;
+      --s1:      #111827;
+      --s2:      #1a2235;
+      --border:  rgba(255,255,255,0.07);
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --accent:  #6366f1;
+      --accent2: #818cf8;
+      --green:   #4ade80;
+      --orange:  #fb923c;
+      --blue:    #38bdf8;
+      --purple:  #c084fc;
+      --gold:    #fbbf24;
+      --red:     #f87171;
     }
-
     html { font-size: 16px; }
     body {
       font-family: 'Pretendard', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      line-height: 1.6;
     }
-
-    /* ── BACKGROUND ── */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(99,102,241,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(192,132,252,0.08) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(99,102,241,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(192,132,252,.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
     }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
     /* ── HEADER ── */
-    header {
-      padding: 28px 0 24px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 32px;
+    header { padding: 28px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+    .hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .hdr h1 {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: -.5px;
+      background: linear-gradient(135deg,#818cf8,#c084fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .logo-area h1 {
-      font-size: 1.35rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #818cf8, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
-    }
-    .logo-area p {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .last-updated {
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    .last-updated span { color: var(--text); font-weight: 500; }
+    .hdr p { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .hdr-right { display: flex; align-items: center; gap: 12px; }
+    .last-upd { font-size: .72rem; color: var(--muted); }
+    .last-upd b { color: var(--text); font-weight: 500; }
 
+    /* ── BUTTONS ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s ease;
-      font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px; font-size: .82rem; font-weight: 600;
+      cursor: pointer; border: none; transition: all .2s; font-family: inherit;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-    }
-    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-ghost {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,0.07); }
+    .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; }
+    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-ghost { background: var(--s2); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: rgba(255,255,255,.07); }
+    .btn-danger { background: rgba(239,68,68,.15); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.25); }
 
-    /* ── NO DATA ── */
-    .no-data {
-      text-align: center;
-      padding: 80px 20px;
+    /* ── SETUP OVERLAY ── */
+    #setup-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(11,15,26,.92);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
     }
-    .no-data .icon { font-size: 3rem; margin-bottom: 16px; }
-    .no-data h2 { font-size: 1.3rem; margin-bottom: 8px; }
-    .no-data p { color: var(--muted); font-size: 0.9rem; }
+    #setup-overlay.hidden { display: none; }
+    .setup-card {
+      background: var(--s1); border: 1px solid var(--border); border-radius: 20px;
+      padding: 40px 44px; width: 380px; max-width: 90vw;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    .setup-card h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+    .setup-card p  { font-size: .8rem; color: var(--muted); margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .05em; }
+    .form-group input {
+      width: 100%; background: var(--s2); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: .9rem;
+      padding: 10px 14px; font-family: inherit; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .setup-submit { width: 100%; margin-top: 8px; padding: 12px; font-size: .9rem; border-radius: 10px; }
+    .setup-err { font-size: .75rem; color: var(--red); margin-top: 10px; min-height: 18px; }
 
-    /* ── SUMMARY CARDS ── */
-    .summary-grid {
+    /* ── CARDS (stat) ── */
+    .stat-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px; margin-bottom: 28px;
     }
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px 22px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s;
+      background: var(--s1); border: 1px solid var(--border); border-radius: 16px;
+      padding: 18px 20px; position: relative; overflow: hidden;
+      transition: transform .2s, border-color .2s;
     }
-    .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.12); }
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-    }
-    .stat-card.accent::before   { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-    .stat-card.green::before    { background: linear-gradient(90deg, #22c55e, var(--green)); }
-    .stat-card.gold::before     { background: linear-gradient(90deg, #f59e0b, var(--gold)); }
-    .stat-card.red::before      { background: linear-gradient(90deg, #ef4444, var(--red)); }
-    .stat-card.blue::before     { background: linear-gradient(90deg, #0ea5e9, var(--blue)); }
+    .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.12); }
+    .stat-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
+    .sc-purple::before { background: linear-gradient(90deg,var(--accent),var(--purple)); }
+    .sc-green::before  { background: linear-gradient(90deg,#22c55e,var(--green)); }
+    .sc-blue::before   { background: linear-gradient(90deg,#0ea5e9,var(--blue)); }
+    .sc-gold::before   { background: linear-gradient(90deg,#f59e0b,var(--gold)); }
+    .sc-orange::before { background: linear-gradient(90deg,#ea580c,var(--orange)); }
 
-    .stat-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .stat-value {
-      font-size: 1.9rem;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -1px;
-    }
-    .stat-value .unit { font-size: 1rem; font-weight: 600; margin-left: 2px; }
-    .stat-sub {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .stat-sub b { color: var(--text); font-weight: 600; }
+    .sl { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; }
+    .sv { font-size:1.7rem; font-weight:800; line-height:1; letter-spacing:-1px; }
+    .sv .u { font-size:.9rem; font-weight:600; margin-left:2px; }
+    .ss { font-size:.72rem; color:var(--muted); margin-top:5px; }
+    .ss b { color:var(--text); font-weight:600; }
 
-    /* ── OVERALL PROGRESS BAR ── */
-    .overall-progress {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px 26px;
-      margin-bottom: 32px;
+    /* ── PACE TABLE ── */
+    .pace-section { margin-bottom: 28px; }
+    .section-title { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:12px; }
+    .pace-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    @media(max-width:640px){ .pace-grid{grid-template-columns:1fr;} }
+
+    .pace-card {
+      background: var(--s1); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 20px; position:relative; overflow:hidden;
+      transition: transform .2s, border-color .2s;
     }
-    .overall-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 14px;
-    }
-    .overall-header h2 {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .overall-pct {
-      font-size: 1.6rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent2), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .progress-track {
-      background: rgba(255,255,255,0.06);
-      border-radius: 100px;
-      height: 10px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 100px;
-      background: linear-gradient(90deg, var(--accent), var(--purple));
-      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      top: 0; right: 0; bottom: 0;
-      width: 40px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-      animation: shimmer 2s infinite;
-    }
-    @keyframes shimmer {
-      0% { opacity: 0; }
-      50% { opacity: 1; }
-      100% { opacity: 0; }
-    }
+    .pace-card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,.12); }
+    .pace-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
+    .pc-all::before  { background: linear-gradient(90deg,var(--accent),var(--purple)); }
+    .pc-7d::before   { background: linear-gradient(90deg,#0ea5e9,var(--blue)); }
+    .pc-3d::before   { background: linear-gradient(90deg,#16a34a,var(--green)); }
+
+    .pace-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:6px; }
+    .pace-avg   { font-size:1.5rem; font-weight:800; line-height:1; letter-spacing:-1px; }
+    .pace-avg .u { font-size:.85rem; font-weight:600; margin-left:2px; }
+    .pace-detail { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+    .pace-row { display:flex; justify-content:space-between; align-items:baseline; font-size:.75rem; margin-top:4px; }
+    .pace-row .pk { color:var(--muted); }
+    .pace-row .pv { font-weight:700; }
+
+    /* ── OVERALL PROGRESS ── */
+    .overall-wrap { background:var(--s1); border:1px solid var(--border); border-radius:16px; padding:22px 24px; margin-bottom:28px; }
+    .overall-hdr { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+    .overall-hdr h2 { font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+    .overall-pct { font-size:1.5rem; font-weight:800; background:linear-gradient(135deg,var(--accent2),var(--purple)); -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .track { background:rgba(255,255,255,.06); border-radius:100px; height:10px; overflow:hidden; }
+    .fill  { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--accent),var(--purple)); transition:width 1.2s cubic-bezier(.4,0,.2,1); }
 
     /* ── COURSE CARDS ── */
-    .courses-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 16px;
+    .course-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:40px; }
+    .ccard {
+      background:var(--s1); border:1px solid var(--border); border-radius:16px;
+      padding:20px; position:relative; overflow:hidden;
+      transition:transform .25s, box-shadow .25s, border-color .25s;
     }
-    .courses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-    .course-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
-    }
-    .course-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-      border-color: rgba(255,255,255,0.12);
-    }
-    .course-glow {
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      opacity: 0.08;
-      pointer-events: none;
-    }
-    .course-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-    .course-name {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .badge {
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      padding: 3px 8px;
-      border-radius: 100px;
-      text-transform: uppercase;
-    }
-    .badge-ongoing {
-      background: rgba(251,146,60,0.15);
-      color: var(--orange);
-      border: 1px solid rgba(251,146,60,0.3);
-      animation: pulse-badge 2.5s ease-in-out infinite;
-    }
-    @keyframes pulse-badge {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-    .badge-done {
-      background: rgba(74,222,128,0.1);
-      color: var(--green);
-      border: 1px solid rgba(74,222,128,0.2);
-    }
-
-    .course-counts {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-    .count-done {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      line-height: 1;
-    }
-    .count-total {
-      font-size: 1rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
-    .count-unit {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-left: 2px;
-    }
-
-    .course-bar-track {
-      background: rgba(255,255,255,0.06);
-      border-radius: 100px;
-      height: 6px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .course-bar-fill {
-      height: 100%;
-      border-radius: 100px;
-      transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .course-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    .course-pct { font-weight: 700; }
+    .ccard:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); border-color:rgba(255,255,255,.12); }
+    .cglow { position:absolute; top:-40px;right:-40px; width:120px;height:120px; border-radius:50%; opacity:.08; pointer-events:none; }
+    .ctop { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+    .cname { font-size:.95rem; font-weight:700; }
+    .badge { font-size:.6rem; font-weight:700; letter-spacing:.04em; padding:3px 8px; border-radius:100px; text-transform:uppercase; }
+    .badge-ongoing { background:rgba(251,146,60,.15); color:var(--orange); border:1px solid rgba(251,146,60,.3); animation:pulse-b 2.5s ease-in-out infinite; }
+    .badge-done    { background:rgba(74,222,128,.1);  color:var(--green);  border:1px solid rgba(74,222,128,.2); }
+    @keyframes pulse-b { 0%,100%{opacity:1} 50%{opacity:.6} }
+    .cnums { display:flex; align-items:baseline; gap:3px; margin-bottom:9px; }
+    .cdone { font-size:1.8rem; font-weight:800; line-height:1; letter-spacing:-1px; }
+    .ctotal { font-size:.9rem; color:var(--muted); font-weight:500; }
+    .cunit  { font-size:.75rem; color:var(--muted); margin-left:1px; }
+    .ctrack { background:rgba(255,255,255,.06); border-radius:100px; height:5px; overflow:hidden; margin-bottom:9px; }
+    .cfill  { height:100%; border-radius:100px; transition:width 1.4s cubic-bezier(.4,0,.2,1); }
+    .cmeta  { display:flex; justify-content:space-between; font-size:.7rem; color:var(--muted); }
+    .cpct   { font-weight:700; }
 
     /* 원가관리 편집 */
-    .cost-edit-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-    }
-    .cost-edit-row label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      white-space: nowrap;
-    }
+    .cost-edit { display:flex; align-items:center; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+    .cost-edit label { font-size:.68rem; color:var(--muted); white-space:nowrap; }
     .cost-input {
-      width: 60px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 4px 8px;
-      font-family: inherit;
-      text-align: center;
+      width:58px; background:var(--s2); border:1px solid var(--border);
+      border-radius:6px; color:var(--text); font-size:.8rem; font-weight:600;
+      padding:4px 8px; font-family:inherit; text-align:center;
     }
-    .cost-input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .btn-save {
-      padding: 4px 10px;
-      font-size: 0.7rem;
-      border-radius: 6px;
-      background: rgba(99,102,241,0.15);
-      color: var(--accent2);
-      border: 1px solid rgba(99,102,241,0.3);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn-save:hover { background: rgba(99,102,241,0.25); }
+    .cost-input:focus { outline:none; border-color:var(--accent); }
+    .btn-save { padding:4px 10px; font-size:.7rem; border-radius:6px; background:rgba(99,102,241,.15); color:var(--accent2); border:1px solid rgba(99,102,241,.3); cursor:pointer; font-family:inherit; font-weight:600; transition:all .2s; }
+    .btn-save:hover { background:rgba(99,102,241,.25); }
+
+    /* ── SETTINGS AREA ── */
+    .settings-row { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-bottom:20px; }
+    .current-id { font-size:.75rem; color:var(--muted); }
+    .current-id b { color:var(--text); }
 
     /* ── ERRORS ── */
-    .error-box {
-      background: rgba(248,113,113,0.08);
-      border: 1px solid rgba(248,113,113,0.2);
-      border-radius: 12px;
-      padding: 14px 18px;
-      margin-bottom: 24px;
-      font-size: 0.8rem;
-      color: var(--red);
-    }
+    .err-box { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.2); border-radius:12px; padding:12px 16px; margin-bottom:20px; font-size:.78rem; color:var(--red); }
 
     /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 24px 0 40px;
-      font-size: 0.72rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-    }
+    footer { text-align:center; padding:20px 0 36px; font-size:.7rem; color:var(--muted); border-top:1px solid var(--border); }
 
     /* ── TOAST ── */
-    #toast {
-      position: fixed;
-      bottom: 28px; right: 28px;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-      transform: translateY(80px);
-      opacity: 0;
-      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 999;
-    }
-    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast { position:fixed; bottom:24px; right:24px; padding:11px 18px; border-radius:10px; font-size:.8rem; font-weight:600; background:var(--s2); border:1px solid var(--border); color:var(--text); box-shadow:0 8px 30px rgba(0,0,0,.4); transform:translateY(60px); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); z-index:200; }
+    #toast.show { transform:translateY(0); opacity:1; }
 
-    /* ── SPINNER ── */
-    .spin {
-      display: inline-block;
-      animation: spin 0.9s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { display:inline-block; animation:spin .9s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .summary-grid { grid-template-columns: 1fr 1fr; }
-      .courses-grid { grid-template-columns: 1fr 1fr; }
-      .stat-value { font-size: 1.5rem; }
-    }
-    @media (max-width: 420px) {
-      .summary-grid { grid-template-columns: 1fr 1fr; }
-      .courses-grid { grid-template-columns: 1fr; }
-    }
+    /* ── NO DATA ── */
+    .no-data { text-align:center; padding:60px 20px; }
+    .no-data .icon { font-size:2.5rem; margin-bottom:14px; }
   </style>
 </head>
 <body>
 
-<div class="container">
+<!-- ── 로그인 설정 오버레이 ── -->
+<div id="setup-overlay" class="{{ 'hidden' if logged_in else '' }}">
+  <div class="setup-card">
+    <h2>🔐 로그인 정보 입력</h2>
+    <p>우리경영아카데미 아이디와 비밀번호를 입력하세요.<br>정보는 서버에만 저장되고 외부로 전송되지 않습니다.</p>
+    <div class="form-group">
+      <label for="setup-id">아이디</label>
+      <input type="text" id="setup-id" placeholder="아이디 입력" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label for="setup-pw">비밀번호</label>
+      <input type="password" id="setup-pw" placeholder="비밀번호 입력" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary setup-submit" id="setup-btn" onclick="submitSetup()">저장 후 스크래핑 시작</button>
+    <div class="setup-err" id="setup-err"></div>
+  </div>
+</div>
+
+<div class="wrap">
 
   <!-- ── HEADER ── -->
   <header>
-    <div class="header-inner">
-      <div class="logo-area">
+    <div class="hdr">
+      <div>
         <h1>📚 강의 진도 트래커</h1>
         <p>CTA 2차 대비 · 우리경영아카데미</p>
       </div>
-      <div class="header-actions">
+      <div class="hdr-right">
         {% if data and data.scraped_at %}
-        <div class="last-updated">
-          마지막 갱신: <span id="last-time">{{ data.scraped_at[:16].replace('T', ' ') }}</span>
-        </div>
+        <span class="last-upd">갱신: <b>{{ data.scraped_at[:16].replace('T',' ') }}</b></span>
         {% endif %}
         <button class="btn btn-primary" id="refresh-btn" onclick="triggerRefresh()">
           <span id="refresh-icon">↺</span> 갱신
         </button>
+        {% if logged_in %}
+        <button class="btn btn-ghost" onclick="showSetup()" title="계정 변경">⚙️</button>
+        {% endif %}
       </div>
     </div>
   </header>
 
-  {% if not data %}
-  <!-- ── NO DATA ── -->
+  {% if not logged_in or not data %}
   <div class="no-data">
     <div class="icon">⏳</div>
-    <h2>데이터 로딩 중...</h2>
-    <p>첫 스크래핑이 시작되었습니다. 30초 후 페이지를 새로고침해주세요.</p>
-    <br>
-    <button class="btn btn-primary" onclick="location.reload()">새로고침</button>
+    <h2 style="margin-bottom:8px;">
+      {% if not logged_in %}로그인 정보를 입력해주세요{% else %}스크래핑 중...{% endif %}
+    </h2>
+    <p style="color:var(--muted);font-size:.85rem;">
+      {% if logged_in %}첫 데이터를 가져오고 있습니다. 30초 후 새로고침하세요.{% endif %}
+    </p>
+    {% if logged_in %}
+    <br><button class="btn btn-primary" onclick="location.reload()">새로고침</button>
+    {% endif %}
   </div>
 
   {% else %}
 
-  <!-- ── ERRORS ── -->
   {% if data.errors %}
-  <div class="error-box">
-    ⚠️ 일부 과목 스크래핑 실패:
+  <div class="err-box">⚠️ 일부 과목 실패:
     {% for e in data.errors %}{{ e.course }}{% if not loop.last %}, {% endif %}{% endfor %}
-    — 갱신 버튼을 눌러 재시도하세요.
+    — 갱신 버튼 재시도
   </div>
   {% endif %}
 
-  <!-- ── SUMMARY STATS ── -->
-  <div class="summary-grid">
-
-    <div class="stat-card accent">
-      <div class="stat-label">📊 전체 진도율</div>
-      <div class="stat-value" style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-        {{ data.overall_pct }}<span class="unit">%</span>
+  <!-- ── TOP STATS ── -->
+  <div class="stat-grid">
+    <div class="stat-card sc-purple">
+      <div class="sl">📊 전체 진도</div>
+      <div class="sv" style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        {{ data.overall_pct }}<span class="u">%</span>
       </div>
-      <div class="stat-sub">
-        <b>{{ data.total_completed }}</b> / {{ data.total_lectures }}강 완료
-      </div>
+      <div class="ss"><b>{{ data.total_completed }}</b> / {{ data.total_lectures }}강</div>
     </div>
-
-    <div class="stat-card green">
-      <div class="stat-label">✅ 완료 강의</div>
-      <div class="stat-value" style="color:var(--green);">
-        {{ data.total_completed }}<span class="unit">강</span>
-      </div>
-      <div class="stat-sub">잔여 <b>{{ data.remaining }}</b>강</div>
+    <div class="stat-card sc-green">
+      <div class="sl">✅ 완료 강의</div>
+      <div class="sv" style="color:var(--green);">{{ data.total_completed }}<span class="u">강</span></div>
+      <div class="ss">잔여 <b>{{ data.remaining }}</b>강</div>
     </div>
-
-    <div class="stat-card gold">
-      <div class="stat-label">📈 하루 평균</div>
-      {% if data.daily_avg %}
-      <div class="stat-value" style="color:var(--gold);">
-        {{ data.daily_avg }}<span class="unit">강</span>
+    <div class="stat-card sc-blue">
+      <div class="sl">📅 수강 시작일</div>
+      <div class="sv" style="color:var(--blue);font-size:1.1rem;letter-spacing:-.5px;">
+        {{ data.first_date if data.first_date else '—' }}
       </div>
-      <div class="stat-sub">시작일로부터 <b>{{ data.days_elapsed }}</b>일 경과</div>
-      {% else %}
-      <div class="stat-value" style="color:var(--muted);font-size:1.2rem;">계산중</div>
-      <div class="stat-sub">수강 기록이 필요합니다</div>
-      {% endif %}
+      <div class="ss">경과 <b>{{ data.days_elapsed }}</b>일</div>
     </div>
-
-    <div class="stat-card {% if data.expected_finish %}blue{% else %}red{% endif %}">
-      <div class="stat-label">🎯 완강 예상일</div>
-      {% if data.expected_finish %}
-      <div class="stat-value" style="color:var(--blue);font-size:1.15rem;letter-spacing:-0.5px;">
-        {{ data.expected_finish }}
-      </div>
-      <div class="stat-sub">
-        약 <b>{{ data.days_to_finish }}</b>일 후
-        (D-{{ data.days_to_finish }})
-      </div>
-      {% else %}
-      <div class="stat-value" style="color:var(--muted);font-size:1.2rem;">미정</div>
-      <div class="stat-sub">수강 기록이 필요합니다</div>
-      {% endif %}
-    </div>
-
   </div>
 
-  <!-- ── OVERALL PROGRESS ── -->
-  <div class="overall-progress">
-    <div class="overall-header">
+  <!-- ── PACE CARDS ── -->
+  <div class="pace-section">
+    <div class="section-title">📈 페이스별 완강 예상일</div>
+    <div class="pace-grid">
+
+      <!-- 전체 평균 -->
+      <div class="pace-card pc-all">
+        <div class="pace-label">전체 평균 <span style="font-weight:400;opacity:.6;">(시작~어제)</span></div>
+        {% if data.daily_avg %}
+        <div class="pace-avg" style="color:var(--accent2);">{{ data.daily_avg }}<span class="u">강/일</span></div>
+        <div class="pace-detail">
+          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish }}일</span></div>
+          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--accent2);">{{ data.expected_finish }}</span></div>
+        </div>
+        {% else %}
+        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
+        {% endif %}
+      </div>
+
+      <!-- 최근 7일 -->
+      <div class="pace-card pc-7d">
+        <div class="pace-label">최근 7일 페이스</div>
+        {% if data.pace_7d %}
+        <div class="pace-avg" style="color:var(--blue);">{{ data.pace_7d }}<span class="u">강/일</span></div>
+        <div class="pace-detail">
+          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish_7d }}일</span></div>
+          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--blue);">{{ data.expected_finish_7d }}</span></div>
+        </div>
+        {% else %}
+        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
+        {% endif %}
+      </div>
+
+      <!-- 최근 3일 -->
+      <div class="pace-card pc-3d">
+        <div class="pace-label">최근 3일 페이스</div>
+        {% if data.pace_3d %}
+        <div class="pace-avg" style="color:var(--green);">{{ data.pace_3d }}<span class="u">강/일</span></div>
+        <div class="pace-detail">
+          <div class="pace-row"><span class="pk">잔여일</span><span class="pv">D-{{ data.days_to_finish_3d }}일</span></div>
+          <div class="pace-row"><span class="pk">완강 예상</span><span class="pv" style="color:var(--green);">{{ data.expected_finish_3d }}</span></div>
+        </div>
+        {% else %}
+        <div class="pace-avg" style="color:var(--muted);font-size:1rem;">데이터 부족</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── OVERALL BAR ── -->
+  <div class="overall-wrap">
+    <div class="overall-hdr">
       <h2>전체 진도</h2>
       <span class="overall-pct">{{ data.overall_pct }}%</span>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="overall-bar" style="width: 0%"></div>
+    <div class="track">
+      <div class="fill" id="overall-bar" style="width:0%"></div>
     </div>
   </div>
 
   <!-- ── COURSE CARDS ── -->
-  <div class="courses-title">과목별 현황</div>
-  <div class="courses-grid">
-    {% for course in data.courses %}
-    <div class="course-card" id="card-{{ course.id }}">
-      <div class="course-glow" style="background:{{ course.color }};"></div>
-
-      <div class="course-top">
-        <div class="course-name">{{ course.name }}</div>
-        {% if course.ongoing %}
+  <div class="section-title">과목별 현황</div>
+  <div class="course-grid">
+    {% for c in data.courses %}
+    <div class="ccard">
+      <div class="cglow" style="background:{{ c.color }};"></div>
+      <div class="ctop">
+        <div class="cname">{{ c.name }}</div>
+        {% if c.ongoing %}
         <span class="badge badge-ongoing">실강중</span>
         {% else %}
         <span class="badge badge-done">완강</span>
         {% endif %}
       </div>
-
-      <div class="course-counts">
-        <span class="count-done" style="color:{{ course.color }};" id="done-{{ course.id }}">{{ course.completed }}</span>
-        <span class="count-total"> / {{ course.total_lectures }}</span>
-        <span class="count-unit">강</span>
+      <div class="cnums">
+        <span class="cdone" style="color:{{ c.color }};">{{ c.completed }}</span>
+        <span class="ctotal"> / {{ c.total_lectures }}</span>
+        <span class="cunit">강</span>
       </div>
-
-      <div class="course-bar-track">
-        <div class="course-bar-fill"
-             id="bar-{{ course.id }}"
-             style="background:{{ course.color }};width:0%;opacity:0.85;">
-        </div>
+      <div class="ctrack">
+        <div class="cfill" id="bar-{{ c.id }}" style="background:{{ c.color }};opacity:.85;width:0%;"></div>
       </div>
-
-      <div class="course-meta">
-        <span class="course-pct" id="pct-{{ course.id }}" style="color:{{ course.color }};">{{ course.progress_pct }}%</span>
-        <span>잔여 {{ [0, course.total_lectures - course.completed] | max }}강</span>
+      <div class="cmeta">
+        <span class="cpct" style="color:{{ c.color }};">{{ c.progress_pct }}%</span>
+        <span>잔여 {{ [0, c.total_lectures - c.completed] | max }}강</span>
       </div>
-
-      {% if course.id == 'cost' %}
-      <!-- 원가관리 총 강의수 편집 -->
-      <div class="cost-edit-row">
-        <label for="cost-total-input">총 강의수:</label>
-        <input
-          type="number"
-          id="cost-total-input"
-          class="cost-input"
-          value="{{ cost_total }}"
-          min="1"
-          max="200"
-        />
+      {% if c.id == 'cost' %}
+      <div class="cost-edit">
+        <label for="cost-inp">총 강의수:</label>
+        <input type="number" id="cost-inp" class="cost-input" value="{{ cost_total }}" min="1" max="300" />
         <button class="btn-save" onclick="saveCostTotal()">저장</button>
-        <span id="cost-save-msg" style="font-size:0.68rem;color:var(--green);display:none;">✓ 저장됨</span>
+        <span id="cost-msg" style="font-size:.67rem;color:var(--green);display:none;">✓</span>
       </div>
       {% endif %}
     </div>
@@ -613,110 +403,114 @@
 
   {% endif %}
 
-  <footer>
-    우리경영아카데미 강의 트래커 · 1시간마다 자동 갱신
-  </footer>
+  <footer>강의 트래커 · 1시간마다 자동 갱신 · 오늘 제외 기준</footer>
 </div>
 
 <div id="toast"></div>
 
 <script>
   // ── 진도바 애니메이션 ──
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      const overallBar = document.getElementById('overall-bar');
-      if (overallBar) {
-        overallBar.style.width = overallBar.dataset.pct
-          ? overallBar.dataset.pct + '%'
-          : '{{ data.overall_pct if data else 0 }}%';
-      }
-    }, 100);
-  });
-
-  // 과목별 진도바 초기화
   const bars = {
     {% if data %}
-    {% for course in data.courses %}
-    '{{ course.id }}': {{ course.progress_pct }},
-    {% endfor %}
+    {% for c in data.courses %}'{{ c.id }}': {{ c.progress_pct }},{% endfor %}
     {% endif %}
   };
-
   setTimeout(() => {
     for (const [id, pct] of Object.entries(bars)) {
-      const bar = document.getElementById('bar-' + id);
-      if (bar) bar.style.width = pct + '%';
+      const el = document.getElementById('bar-' + id);
+      if (el) el.style.width = pct + '%';
     }
-    const overall = document.getElementById('overall-bar');
-    if (overall) overall.style.width = '{{ data.overall_pct if data else 0 }}%';
+    const ob = document.getElementById('overall-bar');
+    if (ob) ob.style.width = '{{ data.overall_pct if data else 0 }}%';
   }, 200);
+
+  // ── 설정 오버레이 ──
+  function showSetup() {
+    document.getElementById('setup-overlay').classList.remove('hidden');
+  }
+  function hideSetup() {
+    document.getElementById('setup-overlay').classList.add('hidden');
+  }
+
+  async function submitSetup() {
+    const id  = document.getElementById('setup-id').value.trim();
+    const pw  = document.getElementById('setup-pw').value.trim();
+    const err = document.getElementById('setup-err');
+    const btn = document.getElementById('setup-btn');
+    if (!id || !pw) { err.textContent = '아이디와 비밀번호를 모두 입력하세요.'; return; }
+    btn.disabled = true;
+    btn.textContent = '저장 중...';
+    err.textContent = '';
+    try {
+      const res = await fetch('/api/setup', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({id, pw}),
+      });
+      const data = await res.json();
+      if (!res.ok) { err.textContent = data.error || '오류 발생'; btn.disabled=false; btn.textContent='저장 후 스크래핑 시작'; return; }
+      hideSetup();
+      showToast('✅ 저장됨. 30초 후 새로고침하세요.');
+      setTimeout(() => location.reload(), 32000);
+    } catch(e) {
+      err.textContent = '네트워크 오류';
+      btn.disabled = false;
+      btn.textContent = '저장 후 스크래핑 시작';
+    }
+  }
+
+  // Enter 키 지원
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !document.getElementById('setup-overlay').classList.contains('hidden')) {
+      submitSetup();
+    }
+  });
 
   // ── 갱신 ──
   let refreshing = false;
   async function triggerRefresh() {
     if (refreshing) return;
     refreshing = true;
-    const btn = document.getElementById('refresh-btn');
+    const btn  = document.getElementById('refresh-btn');
     const icon = document.getElementById('refresh-icon');
     btn.disabled = true;
     icon.classList.add('spin');
-    showToast('🔄 스크래핑 시작... 약 30초 후 새로고침하세요.');
-
+    showToast('🔄 스크래핑 시작... 약 30초 후 자동 새로고침');
     try {
-      await fetch('/api/refresh', { method: 'POST' });
-      setTimeout(() => {
-        location.reload();
-      }, 35000);
-    } catch (e) {
-      showToast('❌ 요청 실패. 네트워크를 확인하세요.', true);
-      btn.disabled = false;
-      icon.classList.remove('spin');
-      refreshing = false;
+      const res = await fetch('/api/refresh', {method:'POST'});
+      if (!res.ok) { const d=await res.json(); showToast('❌ '+d.error, true); btn.disabled=false; icon.classList.remove('spin'); refreshing=false; return; }
+      setTimeout(() => location.reload(), 35000);
+    } catch(e) {
+      showToast('❌ 네트워크 오류', true);
+      btn.disabled=false; icon.classList.remove('spin'); refreshing=false;
     }
   }
 
-  // ── 원가관리 총 강의수 저장 ──
+  // ── 원가관리 총 강의수 ──
   async function saveCostTotal() {
-    const input = document.getElementById('cost-total-input');
-    const msg = document.getElementById('cost-save-msg');
-    const newTotal = parseInt(input.value);
-    if (!newTotal || newTotal < 1) {
-      showToast('❌ 유효한 숫자를 입력하세요.', true);
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/cost-total', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ total: newTotal }),
-      });
-      if (!res.ok) throw new Error('API 오류');
-
-      const updated = await res.json();
-      showToast(`✅ 원가관리 총 강의수: ${updated.cost_total}강으로 저장됨`);
-
-      msg.style.display = 'inline';
-      setTimeout(() => { msg.style.display = 'none'; }, 3000);
-
-      // 페이지 재로드로 재계산 반영
-      setTimeout(() => location.reload(), 1500);
-
-    } catch (e) {
-      showToast('❌ 저장 실패', true);
-    }
+    const n   = parseInt(document.getElementById('cost-inp').value);
+    const msg = document.getElementById('cost-msg');
+    if (!n || n < 1) { showToast('❌ 유효한 숫자 입력', true); return; }
+    const res = await fetch('/api/cost-total', {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({total: n}),
+    });
+    if (!res.ok) { showToast('❌ 저장 실패', true); return; }
+    showToast(`✅ 원가관리 총 강의수: ${n}강`);
+    msg.style.display='inline';
+    setTimeout(() => { msg.style.display='none'; location.reload(); }, 1500);
   }
 
   // ── 토스트 ──
-  let toastTimer;
-  function showToast(msg, isError = false) {
+  let tt;
+  function showToast(msg, isErr=false) {
     const el = document.getElementById('toast');
     el.textContent = msg;
-    el.style.background = isError ? 'rgba(239,68,68,0.15)' : 'var(--surface2)';
-    el.style.borderColor = isError ? 'rgba(239,68,68,0.3)' : 'var(--border)';
+    el.style.background = isErr ? 'rgba(239,68,68,.15)' : 'var(--s2)';
+    el.style.borderColor = isErr ? 'rgba(239,68,68,.3)' : 'var(--border)';
     el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+    clearTimeout(tt);
+    tt = setTimeout(() => el.classList.remove('show'), 4500);
   }
 </script>
 </body>

@@ -1,8 +1,8 @@
 """
 우리경영아카데미 강의 스크래퍼
-- 로그인 후 세션 유지
+- config.py에서 자격증명 로드 (앱 UI에서 입력)
+- 세션 쿠키 기반 로그인
 - 4개 과목 강의 목록 파싱
-- 각 강의의 수강 완료 여부 판정
 """
 
 import os
@@ -13,16 +13,15 @@ from typing import Optional
 
 import httpx
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 
-load_dotenv()
+from app.config import get_credentials, get_cost_total
+
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.uricpa.com"
 LOGIN_URL = f"{BASE_URL}/GContents/Include/Member/LogIn_Proc.asp"
 LOGIN_PAGE = f"{BASE_URL}/"
 
-# 과목 정보 (lecture_idx, 과목명, 색상, 실강중 여부)
 COURSES = [
     {
         "id": "financial",
@@ -74,7 +73,6 @@ HEADERS = {
 
 
 def parse_minutes(text: str) -> int:
-    """'84분', '1시간 30분', '0분' 등을 분 단위 정수로 변환"""
     text = text.strip()
     if not text or text == "-":
         return 0
@@ -89,7 +87,6 @@ def parse_minutes(text: str) -> int:
 
 
 def parse_date(text: str) -> Optional[date]:
-    """'2026.05.16' 형식을 date 객체로 변환"""
     text = text.strip()
     if not text or text == "-":
         return None
@@ -109,19 +106,12 @@ class UriCpaScraper:
         self._logged_in = False
 
     def login(self) -> bool:
-        """로그인 수행 - 세션 쿠키 획득"""
-        uid = os.getenv("URICPA_ID", "")
-        pwd = os.getenv("URICPA_PW", "")
-
+        uid, pwd = get_credentials()
         if not uid or not pwd:
-            logger.error("URICPA_ID 또는 URICPA_PW 환경변수가 설정되지 않았습니다.")
+            logger.error("자격증명이 설정되지 않았습니다. 앱에서 로그인 정보를 입력하세요.")
             return False
-
         try:
-            # 먼저 메인 페이지 GET (쿠키 초기화)
             self.client.get(LOGIN_PAGE)
-
-            # 로그인 POST
             resp = self.client.post(
                 LOGIN_URL,
                 data={
@@ -134,7 +124,6 @@ class UriCpaScraper:
             )
             resp.raise_for_status()
 
-            # 로그인 성공 확인 - 강의 목록 페이지 접근 시도
             test = self.client.get(
                 f"{BASE_URL}/GContents/MyClass/MyCourse/TogetherClass/OnLecture/Index.asp"
             )
@@ -145,7 +134,6 @@ class UriCpaScraper:
             self._logged_in = True
             logger.info("로그인 성공")
             return True
-
         except Exception as e:
             logger.error(f"로그인 중 오류: {e}")
             return False
@@ -156,7 +144,6 @@ class UriCpaScraper:
         return True
 
     def fetch_course(self, course: dict) -> dict:
-        """과목 상세 페이지를 스크래핑하여 강의 목록 반환"""
         if not self._ensure_logged_in():
             raise RuntimeError("로그인 실패")
 
@@ -171,7 +158,6 @@ class UriCpaScraper:
             raise
 
         if "로그인이 필요합니다" in resp.text:
-            # 세션 만료 - 재로그인
             self._logged_in = False
             if not self.login():
                 raise RuntimeError("재로그인 실패")
@@ -181,26 +167,19 @@ class UriCpaScraper:
         return self._parse_course_page(soup, course)
 
     def _parse_course_page(self, soup: BeautifulSoup, course: dict) -> dict:
-        """HTML 파싱 → 강의 목록 딕셔너리 반환"""
         lectures = []
-
-        # ── 헤더 영역: 총 강의수 ──
         total_count_from_page = 0
         header_text = soup.get_text()
 
-        # "강의수  124강 [162시간 50분]" 패턴
         m = re.search(r"강의수\s*[\s\S]{0,30}?(\d+)\s*강", header_text)
         if m:
             total_count_from_page = int(m.group(1))
 
-        # 수강 시작일 추출
         start_date = None
         m2 = re.search(r"(\d{4}\.\d{2}\.\d{2})\s*~", header_text)
         if m2:
             start_date = parse_date(m2.group(1))
 
-        # ── 강의 테이블 파싱 ──
-        # 헤더가 '회차', '강의제목' 인 테이블 찾기
         lecture_table = None
         for t in soup.find_all("table"):
             th_texts = [th.get_text(strip=True) for th in t.find_all("th")]
@@ -213,8 +192,6 @@ class UriCpaScraper:
             return self._make_result(course, [], total_count_from_page, start_date)
 
         rows = lecture_table.find_all("tr")
-
-        # 헤더 행 → 컬럼 인덱스 매핑
         header_row = rows[0] if rows else None
         if not header_row:
             return self._make_result(course, [], total_count_from_page, start_date)
@@ -241,44 +218,27 @@ class UriCpaScraper:
                 continue
             episode_num = int(ep_match.group(1))
 
-            title       = cells[idx_title].get_text(strip=True)
+            title        = cells[idx_title].get_text(strip=True)
             duration_min = parse_minutes(cells[idx_dur].get_text(strip=True))
             watched_min  = parse_minutes(cells[idx_watch].get_text(strip=True))
             last_date    = parse_date(cells[idx_date].get_text(strip=True))
 
-            lectures.append(
-                {
-                    "episode": episode_num,
-                    "title": title,
-                    "duration_min": duration_min,
-                    "watched_min": watched_min,
-                    "last_date": last_date.isoformat() if last_date else None,
-                }
-            )
+            lectures.append({
+                "episode":      episode_num,
+                "title":        title,
+                "duration_min": duration_min,
+                "watched_min":  watched_min,
+                "last_date":    last_date.isoformat() if last_date else None,
+            })
 
         return self._make_result(course, lectures, total_count_from_page, start_date)
 
-
-    def _make_result(
-        self,
-        course: dict,
-        lectures: list,
-        total_from_page: int,
-        start_date,
-    ) -> dict:
-        """완료 강의 계산 + 결과 딕셔너리 구성"""
-
-        # 원가관리는 env 값 우선 사용
+    def _make_result(self, course, lectures, total_from_page, start_date):
         if course["id"] == "cost":
-            env_total = int(os.getenv("COST_TOTAL_LECTURES", "65"))
-            total_lectures = env_total
+            total_lectures = get_cost_total()
         else:
             total_lectures = total_from_page if total_from_page > 0 else len(lectures)
 
-        # ── 완료 강의 계산 ──
-        # 규칙: 어떤 강의 N이 최종수강일이 있으면 완료.
-        #       최종수강일이 없어도, 그보다 뒤 회차가 완료면 해당 강의도 완료로 간주
-        #       (OT 스킵, 강의 순서 무시 수강 등 대응)
         if lectures:
             max_completed_ep = max(
                 (l["episode"] for l in lectures if l["last_date"]),
@@ -291,49 +251,43 @@ class UriCpaScraper:
         dates_seen = []
 
         for lec in lectures:
-            # 완료 조건: 최종수강일 있거나, 더 뒤 회차가 완료된 경우
             is_done = lec["last_date"] is not None or lec["episode"] <= max_completed_ep
             if is_done:
                 completed_count += 1
             if lec["last_date"]:
                 dates_seen.append(lec["last_date"])
 
-        # 첫 수강일 = 가장 이른 최종수강일
         first_date = min(dates_seen) if dates_seen else None
 
         return {
-            "id": course["id"],
-            "name": course["name"],
-            "color": course["color"],
-            "ongoing": course["ongoing"],
-            "total_lectures": total_lectures,
-            "total_from_page": total_from_page,
-            "completed": completed_count,
-            "lectures": lectures,
-            "start_date": start_date.isoformat() if start_date else None,
+            "id":               course["id"],
+            "name":             course["name"],
+            "color":            course["color"],
+            "ongoing":          course["ongoing"],
+            "total_lectures":   total_lectures,
+            "total_from_page":  total_from_page,
+            "completed":        completed_count,
+            "lectures":         lectures,
+            "start_date":       start_date.isoformat() if start_date else None,
             "first_watched_date": first_date,
         }
 
     def fetch_all(self) -> dict:
-        """4개 과목 전체 스크래핑"""
         results = []
         errors = []
-
         for course in COURSES:
             try:
                 logger.info(f"[{course['name']}] 스크래핑 시작")
                 data = self.fetch_course(course)
                 results.append(data)
-                logger.info(
-                    f"[{course['name']}] 완료: {data['completed']}/{data['total_lectures']}강"
-                )
+                logger.info(f"[{course['name']}] 완료: {data['completed']}/{data['total_lectures']}강")
             except Exception as e:
                 logger.error(f"[{course['name']}] 스크래핑 실패: {e}")
                 errors.append({"course": course["name"], "error": str(e)})
 
         return {
-            "courses": results,
-            "errors": errors,
+            "courses":    results,
+            "errors":     errors,
             "scraped_at": datetime.now().isoformat(),
         }
 
