@@ -1,0 +1,16 @@
+services:
+  tracker:
+    build: .
+    container_name: uricpa-tracker
+    ports:
+      - "8765:8000"
+    volumes:
+      - ./app/data:/app/app/data
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
