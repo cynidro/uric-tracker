@@ -64,7 +64,7 @@ def load_cached() -> dict | None:
         try:
             data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
             # 구버전 캐시 감지 → 재계산
-            if data and "weekday_stats" not in data and "courses" in data:
+            if data and ("weekly_comparison" not in data or "weekday_stats" not in data) and "courses" in data:
                 logger.info("구버전 캐시 감지 — 재계산 중...")
                 result = calculate_progress(data["courses"])
                 result["errors"]     = data.get("errors", [])
@@ -86,10 +86,9 @@ async def lifespan(app: FastAPI):
     if has_credentials() and not DATA_FILE.exists():
         threading.Thread(target=run_scrape, daemon=True).start()
 
-    interval = get_refresh_interval()
-    scheduler.add_job(run_scrape, "interval", minutes=interval, id="scrape_job")
+    scheduler.add_job(run_scrape, "cron", hour=23, minute=30, id="scrape_job")
     scheduler.start()
-    logger.info(f"스케줄러: {interval}분마다 자동 갱신")
+    logger.info("스케줄러: 매일 오후 11시 30분에 자동 갱신")
 
     yield
     scheduler.shutdown()

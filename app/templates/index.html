@@ -89,28 +89,7 @@
     .btn-save:hover{background:rgba(99,102,241,.28)}
     .cost-label{font-size:.72rem;color:var(--muted)}
 
-    /* WEEKDAY/WEEKEND */
-    .ww-card{display:flex;gap:0;margin-bottom:14px}
-    .ww-side{flex:1;padding:12px 14px;border-right:1px solid var(--bd)}
-    .ww-side:last-child{border-right:none}
-    .ww-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
-    .ww-val{font-size:1rem;font-weight:800}
-    .ww-sub{font-size:.65rem;color:var(--muted);margin-top:2px}
-
-    /* SCENARIO TABLE */
-    .wi-card{margin-bottom:18px}
-    .sc-table{width:100%;border-collapse:collapse;font-size:.75rem}
-    .sc-table th{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:5px 8px;text-align:left;border-bottom:1px solid var(--bd)}
-    .sc-table th:nth-child(2),.sc-table th:nth-child(3){text-align:center}
-    .sc-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
-    .sc-table td:nth-child(2),.sc-table td:nth-child(3){text-align:center}
-    .sc-table tr:last-child td{border-bottom:none}
-    .sc-tag{font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:3px;white-space:nowrap}
-    .sc-wd{background:rgba(56,189,248,.12);color:var(--blue)}
-    .sc-we{background:rgba(251,146,60,.12);color:var(--orange)}
-    .sc-h{background:rgba(74,222,128,.12);color:var(--green)}
-    .sc-finish{font-weight:700;font-size:.8rem}
-    .sc-saved{font-size:.65rem;color:var(--green);display:block;margin-top:1px}
+    /* WEEKDAY/WEEKEND & SCENARIO TABLE STYLES REMOVED */
 
     /* ERR */
     .err-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.75rem;color:var(--red)}
@@ -209,12 +188,12 @@
     <div class="pace-row">
       <span class="pr-tag">7일</span>
       <span class="pr-val" style="color:var(--blue)">{% if data.pace_7d %}{{ data.pace_7d }}강{% else %}—{% endif %}</span>
-      <span class="pr-finish">{% if data.expected_finish_7d %}{{ data.expected_finish_7d }} D-{{ data.days_to_finish_7d }}{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_7d %}{{ data.expected_finish_7d }}{% else %}—{% endif %}</span>
     </div>
     <div class="pace-row">
       <span class="pr-tag">3일</span>
       <span class="pr-val" style="color:var(--green)">{% if data.pace_3d %}{{ data.pace_3d }}강{% else %}—{% endif %}</span>
-      <span class="pr-finish">{% if data.expected_finish_3d %}{{ data.expected_finish_3d }} D-{{ data.days_to_finish_3d }}{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_3d %}{{ data.expected_finish_3d }}{% else %}—{% endif %}</span>
     </div>
   </div>
 
@@ -224,12 +203,12 @@
     <div class="pace-row">
       <span class="pr-tag">7일</span>
       <span class="pr-val" style="color:var(--blue)">{% if data.pace_7d_hours %}{{ data.pace_7d_hours }}h{% else %}—{% endif %}</span>
-      <span class="pr-finish">{% if data.expected_finish_7d_h %}{{ data.expected_finish_7d_h }} D-{{ data.days_to_finish_7d_h }}{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_7d_h %}{{ data.expected_finish_7d_h }}{% else %}—{% endif %}</span>
     </div>
     <div class="pace-row">
       <span class="pr-tag">3일</span>
       <span class="pr-val" style="color:var(--green)">{% if data.pace_3d_hours %}{{ data.pace_3d_hours }}h{% else %}—{% endif %}</span>
-      <span class="pr-finish">{% if data.expected_finish_3d_h %}{{ data.expected_finish_3d_h }} D-{{ data.days_to_finish_3d_h }}{% else %}—{% endif %}</span>
+      <span class="pr-finish">{% if data.expected_finish_3d_h %}{{ data.expected_finish_3d_h }}{% else %}—{% endif %}</span>
     </div>
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-size:.65rem;color:var(--muted)">
       잔여 {{ data.remaining_hours }}h · 완료강의 실제시간 기준
@@ -249,38 +228,125 @@
   </div>
 </div>
 
-<!-- WEEKDAY/WEEKEND -->
-{% set ws = data.weekday_stats if data.weekday_stats else {} %}
-<div class="section-label">평일 / 주말 분석</div>
-<div class="card ww-card" style="padding:0;overflow:hidden;margin-bottom:14px">
-  <div class="ww-side">
-    <div class="ww-label">📅 평일 ({{ ws.get('weekday_days', 0) }}일)</div>
-    <div class="ww-val" style="color:var(--blue)">{% if ws.get('weekday_avg_lecs') %}{{ ws.weekday_avg_lecs }}강{% else %}—{% endif %}</div>
-    <div class="ww-sub">{% if ws.get('weekday_avg_hours') %}{{ ws.weekday_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
-  </div>
-  <div class="ww-side">
-    <div class="ww-label">🏖 주말 ({{ ws.get('weekend_days', 0) }}일)</div>
-    <div class="ww-val" style="color:var(--orange)">{% if ws.get('weekend_avg_lecs') %}{{ ws.weekend_avg_lecs }}강{% else %}—{% endif %}</div>
-    <div class="ww-sub">{% if ws.get('weekend_avg_hours') %}{{ ws.weekend_avg_hours }}h/일{% else %}데이터 부족{% endif %}</div>
-  </div>
-</div>
+<!-- WEEKLY COMPARISON (WoW) -->
+{% set wc = data.weekly_comparison if data and data.weekly_comparison else {} %}
+<div class="section-label">📈 이번 주 vs 지난 주 비교 (WoW)</div>
+<div class="pace-grid" style="margin-bottom:14px">
 
-<!-- SCENARIO TABLE -->
-<div class="section-label">💡 추가 학습 시뮬레이션</div>
-<div class="card wi-card">
-  <table class="sc-table">
-    <thead><tr>
-      <th>조건 <span style="font-weight:400;opacity:.6">(1일 추가 기준)</span></th>
-      <th>강의기준 완강일</th>
-      <th>시간기준 완강일</th>
-    </tr></thead>
-    <tbody id="sc-body"><tr><td colspan="3" style="color:var(--muted);text-align:center;padding:14px">계산 중...</td></tr></tbody>
-  </table>
+  <!-- 평일 비교 -->
+  <div class="card pace-card pc-lec" style="padding: 12px 14px;">
+    <div class="pace-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+      <span>📅 평일 추이 (월~금)</span>
+      <span style="font-size: 0.62rem; color: var(--muted); font-weight:normal;">이번 주 {{ wc.this_week_wd.days_count if wc.this_week_wd else 0 }}일 집계</span>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+      <!-- 시간 비교 (가장 중요) -->
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 시간</span>
+        <div style="text-align: right;">
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--blue);">
+            {% if wc.this_week_wd and wc.this_week_wd.avg_hours is not none %}{{ wc.this_week_wd.avg_hours }}h{% else %}—{% endif %}
+            <span style="font-size: 0.68rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
+              / 지난주 {{ wc.last_week_wd.avg_hours if wc.last_week_wd else 0 }}h
+            </span>
+          </div>
+          {% if wc.wd_hour_delta is not none %}
+            <div style="font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 2px; margin-top: 1px;
+              {% if wc.wd_hour_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
+              {% if wc.wd_hour_delta >= 0 %}▲ +{{ wc.wd_hour_delta }}h{% else %}▼ {{ wc.wd_hour_delta }}h{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div style="border-top: 1px dashed var(--bd); margin: 1px 0;"></div>
+      
+      <!-- 강의수 비교 -->
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 강의수</span>
+        <div style="text-align: right;">
+          <div style="font-size: 0.9rem; font-weight: 700; color: var(--text);">
+            {% if wc.this_week_wd and wc.this_week_wd.avg_lecs is not none %}{{ wc.this_week_wd.avg_lecs }}강{% else %}—{% endif %}
+            <span style="font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
+              / 지난주 {{ wc.last_week_wd.avg_lecs if wc.last_week_wd else 0 }}강
+            </span>
+          </div>
+          {% if wc.wd_lec_delta is not none %}
+            <div style="font-size: 0.62rem; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;
+              {% if wc.wd_lec_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
+              {% if wc.wd_lec_delta >= 0 %}▲ +{{ wc.wd_lec_delta }}강{% else %}▼ {{ wc.wd_lec_delta }}강{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주말 비교 -->
+  <div class="card pace-card pc-time" style="padding: 12px 14px;">
+    <div class="pace-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+      <span>🏖 주말 추이 (토~일)</span>
+      <span style="font-size: 0.62rem; color: var(--muted); font-weight:normal;">
+        {% if wc.this_week_we and wc.this_week_we.days_count > 0 %}이번 주 {{ wc.this_week_we.days_count }}일 집계{% else %}주말 집계 전{% endif %}
+      </span>
+    </div>
+    
+    {% if wc.this_week_we and wc.this_week_we.days_count > 0 %}
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+      <!-- 시간 비교 (가장 중요) -->
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 시간</span>
+        <div style="text-align: right;">
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--orange);">
+            {% if wc.this_week_we.avg_hours is not none %}{{ wc.this_week_we.avg_hours }}h{% else %}—{% endif %}
+            <span style="font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
+              / 지난주 {{ wc.last_week_we.avg_hours if wc.last_week_we else 0 }}h
+            </span>
+          </div>
+          {% if wc.we_hour_delta is not none %}
+            <div style="font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 2px; margin-top: 1px;
+              {% if wc.we_hour_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
+              {% if wc.we_hour_delta >= 0 %}▲ +{{ wc.we_hour_delta }}h{% else %}▼ {{ wc.we_hour_delta }}h{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div style="border-top: 1px dashed var(--bd); margin: 1px 0;"></div>
+      
+      <!-- 강의수 비교 -->
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 강의수</span>
+        <div style="text-align: right;">
+          <div style="font-size: 0.9rem; font-weight: 700; color: var(--text);">
+            {% if wc.this_week_we and wc.this_week_we.avg_lecs is not none %}{{ wc.this_week_we.avg_lecs }}강{% else %}—{% endif %}
+            <span style="font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
+              / 지난주 {{ wc.last_week_we.avg_lecs if wc.last_week_we else 0 }}강
+            </span>
+          </div>
+          {% if wc.we_lec_delta is not none %}
+            <div style="font-size: 0.62rem; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;
+              {% if wc.we_lec_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
+              {% if wc.we_lec_delta >= 0 %}▲ +{{ wc.we_lec_delta }}강{% else %}▼ {{ wc.we_lec_delta }}강{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 52px; text-align: center;">
+      <div style="font-size: 0.75rem; color: var(--muted); font-weight: 500;">주말 학습 집계 대기 중</div>
+      <div style="font-size: 0.6rem; color: var(--muted); margin-top: 1px;">(토요일 밤 11시 이후부터 당일 반영)</div>
+    </div>
+    {% endif %}
+  </div>
+
 </div>
 
 {% endif %}
 
-<footer>강의 트래커 · 1시간 자동갱신 · 23시 이후 당일분 포함</footer>
+<footer>강의 트래커 · 매일 23:30 자동갱신 · 23시 이후 당일분 포함</footer>
 </div>
 
 <div id="toast"></div>
@@ -288,69 +354,13 @@
 <script>
 // ── 데이터 ──
 const D = {
-  remaining:    {{ data.remaining       if data else 0 }},
-  remHours:     {{ data.remaining_hours if data else 0 }},
-  today:        '{{ data.today          if data else "" }}',
   overallPct:   {{ data.overall_pct     if data else 0 }},
-  days7d:  {{ data.days_to_finish_7d   if data else 'null' }},
-  days7dH: {{ data.days_to_finish_7d_h if data else 'null' }},
-  ws: {
-    wdLec: {{ ((data.weekday_stats or {}).get('weekday_avg_lecs')  or 0) if data else 0 }},
-    weLec: {{ ((data.weekday_stats or {}).get('weekend_avg_lecs')  or 0) if data else 0 }},
-    wdHrs: {{ ((data.weekday_stats or {}).get('weekday_avg_hours') or 0) if data else 0 }},
-    weHrs: {{ ((data.weekday_stats or {}).get('weekend_avg_hours') or 0) if data else 0 }},
-  },
 };
 
 setTimeout(() => {
   const ob = document.getElementById('overall-bar');
   if (ob) ob.style.width = D.overallPct + '%';
-  buildScenarios();
 }, 250);
-
-// ── 시나리오 테이블 ──
-function buildScenarios() {
-  const {wdLec, weLec, wdHrs, weHrs} = D.ws;
-  const today = new Date(D.today);
-  function fd(days) {
-    const d = new Date(today); d.setDate(d.getDate() + days);
-    return d.toISOString().slice(5,10);  // MM-DD
-  }
-  function lecDays(nWd, nWe) {
-    const daily = (nWd*5 + nWe*2) / 7;
-    return daily > 0 ? Math.ceil(D.remaining / daily) : null;
-  }
-  function hrDays(nWdH, nWeH) {
-    const daily = (nWdH*5 + nWeH*2) / 7;
-    return daily > 0 ? Math.ceil(D.remHours / daily) : null;
-  }
-  function cell(days, base) {
-    if (!days) return '<td style="color:var(--muted)">—</td>';
-    const saved = base ? base - days : null;
-    const sv = saved && saved !== 0
-      ? `<span class="sc-saved">${saved > 0 ? '▲ '+saved+'일 단축' : '▼ '+(-saved)+'일 증가'}</span>` : '';
-    return `<td><span class="sc-finish">${fd(days)}</span> <small style="color:var(--muted)">(D-${days})</small>${sv}</td>`;
-  }
-
-  // 강의추가 시나리오
-  const lecRows = [
-    ['<span class="sc-tag sc-wd">평일</span>+1강', lecDays(wdLec+1,weLec),   hrDays(wdHrs+1.5,weHrs)],
-    ['<span class="sc-tag sc-we">주말</span>+2강', lecDays(wdLec,  weLec+2), hrDays(wdHrs,    weHrs+3)],
-    ['<span class="sc-tag sc-we">주말</span>+3강', lecDays(wdLec,  weLec+3), hrDays(wdHrs,    weHrs+4.5)],
-  ];
-  // 시간추가 시나리오 (실제공부시간 × 1.5 = 콘텐츠시간)
-  const hrRows = [
-    ['<span class="sc-tag sc-h">평일</span>+1시간', lecDays(wdLec+1,weLec),   hrDays(wdHrs+1.5,weHrs)],
-    ['<span class="sc-tag sc-h">주말</span>+2시간', lecDays(wdLec,  weLec+2), hrDays(wdHrs,    weHrs+3)],
-    ['<span class="sc-tag sc-h">주말</span>+3시간', lecDays(wdLec,  weLec+3), hrDays(wdHrs,    weHrs+4.5)],
-  ];
-  const sep = '<tr><td colspan="3" style="padding:1px 0;background:rgba(255,255,255,.04)"></td></tr>';
-  const mkRows = arr => arr.map(([lbl,ld,hd]) =>
-    `<tr><td>${lbl}/일</td>${cell(ld,D.days7d)}${cell(hd,D.days7dH)}</tr>`
-  ).join('');
-  document.getElementById('sc-body').innerHTML =
-    mkRows(lecRows) + sep + mkRows(hrRows);
-}
 
 // ── 갱신 ──
 let refreshing = false;

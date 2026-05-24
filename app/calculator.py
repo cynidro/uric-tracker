@@ -154,6 +154,75 @@ def calculate_progress(courses: list) -> dict:
     # ── 주말/평일 분석 ────────────────────────────────────────
     weekday_stats = analyze_weekday_weekend(date_counts, time_per_day)
 
+    # ── 이번 주 vs 지난 주 비교 (WoW) ───────────────────────────
+    this_monday = cutoff - timedelta(days=cutoff.weekday())
+    last_monday = this_monday - timedelta(days=7)
+
+    last_week_wd_days = [last_monday + timedelta(days=i) for i in range(5)]
+    last_week_we_days = [last_monday + timedelta(days=i) for i in [5, 6]]
+
+    this_week_wd_days = [this_monday + timedelta(days=i) for i in range(5) if this_monday + timedelta(days=i) <= cutoff]
+    this_week_we_days = [this_monday + timedelta(days=i) for i in [5, 6] if this_monday + timedelta(days=i) <= cutoff]
+
+    def _get_days_sum(days_list):
+        lecs = sum(date_counts.get(d.isoformat(), 0) for d in days_list)
+        mins = sum(time_per_day.get(d.isoformat(), 0) for d in days_list)
+        return lecs, mins
+
+    last_wd_lecs, last_wd_mins = _get_days_sum(last_week_wd_days)
+    last_we_lecs, last_we_mins = _get_days_sum(last_week_we_days)
+
+    last_wd_avg_lecs = round(last_wd_lecs / 5, 2)
+    last_wd_avg_hours = round(last_wd_mins / 5 / 60.0, 2)
+
+    last_we_avg_lecs = round(last_we_lecs / 2, 2)
+    last_we_avg_hours = round(last_we_mins / 2 / 60.0, 2)
+
+    this_wd_avg_lecs, this_wd_avg_hours = None, None
+    if this_week_wd_days:
+        this_wd_lecs, this_wd_mins = _get_days_sum(this_week_wd_days)
+        n_wd = len(this_week_wd_days)
+        this_wd_avg_lecs = round(this_wd_lecs / n_wd, 2)
+        this_wd_avg_hours = round(this_wd_mins / n_wd / 60.0, 2)
+
+    this_we_avg_lecs, this_we_avg_hours = None, None
+    if this_week_we_days:
+        this_we_lecs, this_we_mins = _get_days_sum(this_week_we_days)
+        n_we = len(this_week_we_days)
+        this_we_avg_lecs = round(this_we_lecs / n_we, 2)
+        this_we_avg_hours = round(this_we_mins / n_we / 60.0, 2)
+
+    wd_lec_delta = round(this_wd_avg_lecs - last_wd_avg_lecs, 2) if this_wd_avg_lecs is not None else None
+    wd_hour_delta = round(this_wd_avg_hours - last_wd_avg_hours, 2) if this_wd_avg_hours is not None else None
+
+    we_lec_delta = round(this_we_avg_lecs - last_we_avg_lecs, 2) if this_we_avg_lecs is not None else None
+    we_hour_delta = round(this_we_avg_hours - last_we_avg_hours, 2) if this_we_avg_hours is not None else None
+
+    weekly_comparison = {
+        "last_week_wd": {
+            "avg_lecs": last_wd_avg_lecs,
+            "avg_hours": last_wd_avg_hours,
+        },
+        "this_week_wd": {
+            "avg_lecs": this_wd_avg_lecs,
+            "avg_hours": this_wd_avg_hours,
+            "days_count": len(this_week_wd_days),
+        },
+        "last_week_we": {
+            "avg_lecs": last_we_avg_lecs,
+            "avg_hours": last_we_avg_hours,
+        },
+        "this_week_we": {
+            "avg_lecs": this_we_avg_lecs,
+            "avg_hours": this_we_avg_hours,
+            "days_count": len(this_week_we_days),
+        },
+        "wd_lec_delta": wd_lec_delta,
+        "wd_hour_delta": wd_hour_delta,
+        "we_lec_delta": we_lec_delta,
+        "we_hour_delta": we_hour_delta,
+    }
+
     # ── 과목별 진도율 ─────────────────────────────────────────
     for c in courses:
         t = c["total_lectures"]
@@ -190,6 +259,8 @@ def calculate_progress(courses: list) -> dict:
         "expected_finish_7d_h":   fh_7d,
         "expected_finish_3d_h":   fh_3d,
         # 주말/평일
-        "weekday_stats": weekday_stats,
-        "courses":       courses,
+        "weekday_stats":      weekday_stats,
+        "weekly_comparison":  weekly_comparison,
+        "courses":            courses,
     }
+
