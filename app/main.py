@@ -36,17 +36,51 @@ DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 scheduler = BackgroundScheduler(timezone="Asia/Seoul")
 
+# 전역 스크래핑 진행 현황
+scrape_progress = {
+    "status": "idle",
+    "current": 0,
+    "total": 4,
+    "subject": "",
+    "message": "",
+}
+
+def update_scrape_progress(current, total, subject, message):
+    global scrape_progress
+    scrape_progress = {
+        "status": "running",
+        "current": current,
+        "total": total,
+        "subject": subject,
+        "message": message,
+    }
+
 
 # ── 스크래핑 ───────────────────────────────────────────────────
 
 def run_scrape():
+    global scrape_progress
     if not has_credentials():
         logger.warning("자격증명 없음 — 스크래핑 건너뜀")
+        scrape_progress = {
+            "status": "error",
+            "current": 0,
+            "total": 4,
+            "subject": "에러",
+            "message": "로그인 정보가 올바르지 않습니다."
+        }
         return
     logger.info("스크래핑 시작...")
+    scrape_progress = {
+        "status": "running",
+        "current": 0,
+        "total": 4,
+        "subject": "준비",
+        "message": "스크래퍼 준비 중..."
+    }
     scraper = UriCpaScraper()
     try:
-        raw    = scraper.fetch_all()
+        raw    = scraper.fetch_all(progress_callback=update_scrape_progress)
         excluded = get_excluded_dates()
         result = calculate_progress(raw["courses"], excluded_dates=excluded)
         result["errors"]     = raw.get("errors", [])
@@ -55,8 +89,22 @@ def run_scrape():
             json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         logger.info(f"완료: {result['total_completed']}/{result['total_lectures']}강")
+        scrape_progress = {
+            "status": "done",
+            "current": 4,
+            "total": 4,
+            "subject": "완료",
+            "message": "새로고침을 준비합니다..."
+        }
     except Exception as e:
         logger.error(f"스크래핑 실패: {e}")
+        scrape_progress = {
+            "status": "error",
+            "current": 0,
+            "total": 4,
+            "subject": "실패",
+            "message": str(e)
+        }
     finally:
         scraper.close()
 
@@ -192,6 +240,12 @@ async def update_excluded_dates(body: dict):
             json.dumps(recalc, ensure_ascii=False, indent=2), encoding="utf-8"
         )
     return JSONResponse({"status": "ok", "excluded_dates_raw": raw_str})
+
+
+@app.get("/api/refresh-status")
+async def get_refresh_status():
+    global scrape_progress
+    return JSONResponse(scrape_progress)
 
 
 @app.get("/health")

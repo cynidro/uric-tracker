@@ -11,7 +11,7 @@
 """
 
 from collections import Counter
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from math import ceil
 from typing import Optional
 
@@ -20,7 +20,8 @@ from typing import Optional
 
 def _get_cutoff() -> tuple[date, date]:
     """(today, cutoff) — 23시 이후면 cutoff=today, 그 외 cutoff=yesterday"""
-    now = datetime.now()
+    KST = timezone(timedelta(hours=9))
+    now = datetime.now(KST)
     today = now.date()
     return today, today if now.hour >= 23 else today - timedelta(days=1)
 

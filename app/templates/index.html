@@ -24,7 +24,7 @@
     /* HEADER */
     header{padding:18px 0 14px;border-bottom:1px solid var(--bd);margin-bottom:18px}
     .hdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .hdr h1{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hdr h1{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,#a5b4fc,#e9d5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
     .hdr-sub{font-size:.68rem;color:var(--muted)}
     .hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .last-upd{font-size:.65rem;color:var(--muted);white-space:nowrap}
@@ -71,7 +71,10 @@
 
     /* PACE SECTION */
     .pace-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-    @media(max-width:500px){.pace-grid{grid-template-columns:1fr}}
+    @media(max-width:500px){
+      .pace-grid{grid-template-columns:1fr}
+      .hdr h1{font-size:1.02rem}
+    }
     .pace-card{position:relative;overflow:hidden}
     .pace-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
     .pc-lec::before{background:linear-gradient(90deg,var(--accent),var(--purple))}
@@ -128,11 +131,10 @@
   <div class="hdr">
     <div>
       <h1>📚 강의 진도 트래커</h1>
-      <div class="hdr-sub">CTA 2차 · 우리경영아카데미{% if data and data.cutoff %} · 기준: {{ data.cutoff }}{% if data.cutoff == data.today %} (오늘포함){% endif %}{% endif %}</div>
     </div>
     <div class="hdr-right">
       {% if data and data.scraped_at %}<span class="last-upd">{{ data.scraped_at[:16].replace('T',' ') }}</span>{% endif %}
-      <button class="btn btn-p" id="refresh-btn" onclick="triggerRefresh()"><span id="ri">↺</span> 갱신</button>
+      <button class="btn btn-p" id="refresh-btn" onclick="triggerRefresh()"><span id="ri">↻</span> 갱신</button>
       {% if logged_in %}<button class="btn btn-g" onclick="showSetup()" title="계정">⚙️</button>{% endif %}
     </div>
   </div>
@@ -181,25 +183,46 @@
 </div>
 
 <!-- PACE (SIMULATED FINISH) -->
-<div class="card pace-card pc-lec" style="margin-bottom:14px; padding: 12px 16px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 24px; font-size: 0.85rem; font-weight: 700;">
-  <div style="display: flex; align-items: center; gap: 6px;">
-    <span style="color: var(--muted); font-size: 0.75rem;">📊 강의수 기준 완강:</span>
-    <span style="color: var(--blue); font-size: 0.95rem;">
-      {% if data.simulated_finish_lecs %}{{ data.simulated_finish_lecs }}{% else %}—{% endif %}
-    </span>
-    {% if data.simulated_days_lecs is not none %}
-      <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_lecs }}일)</span>
-    {% endif %}
+<div class="card pace-card pc-lec" style="margin-bottom:14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+  <!-- 상단 한줄 완강 정보 -->
+  <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 24px; font-size: 0.85rem; font-weight: 700; width:100%;">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="color: var(--muted); font-size: 0.75rem;">📊 강의수 기준 완강:</span>
+      <span style="color: var(--blue); font-size: 0.95rem;">
+        {% if data.simulated_finish_lecs %}{{ data.simulated_finish_lecs }}{% else %}—{% endif %}
+      </span>
+      {% if data.simulated_days_lecs is not none %}
+        <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_lecs }}일)</span>
+      {% endif %}
+    </div>
+    <div style="color: var(--bd); font-weight: normal; font-size: 0.8rem;">|</div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="color: var(--muted); font-size: 0.75rem;">⏱ 수강시간 기준 완강:</span>
+      <span style="color: var(--green); font-size: 0.95rem;">
+        {% if data.simulated_finish_hours %}{{ data.simulated_finish_hours }}{% else %}—{% endif %}
+      </span>
+      {% if data.simulated_days_hours is not none %}
+        <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_hours }}일)</span>
+      {% endif %}
+    </div>
   </div>
-  <div style="color: var(--bd); font-weight: normal; font-size: 0.8rem;">|</div>
-  <div style="display: flex; align-items: center; gap: 6px;">
-    <span style="color: var(--muted); font-size: 0.75rem;">⏱ 수강시간 기준 완강:</span>
-    <span style="color: var(--green); font-size: 0.95rem;">
-      {% if data.simulated_finish_hours %}{{ data.simulated_finish_hours }}{% else %}—{% endif %}
-    </span>
-    {% if data.simulated_days_hours is not none %}
-      <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_hours }}일)</span>
-    {% endif %}
+  
+  <div style="border-top: 1px dashed var(--bd); width: 100%; margin: 2px 0;"></div>
+  
+  <!-- 하단 상세 계산 산식 (근거) -->
+  <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.68rem; color: var(--muted); line-height: 1.4; width:100%; align-items: center; text-align: center;">
+    <div>
+      📘 <b style="color: var(--blue);">강의수 산식:</b> 평일 일평균 
+      <b style="color: var(--text);">{{ data.weekday_avg_lecs or 0.0 }}강</b>, 주말 일평균 
+      <b style="color: var(--text);">{{ data.weekend_avg_lecs or 0.0 }}강</b> 산정 
+      (잔여 <b style="color: var(--orange);">{{ data.remaining or 0 }}강</b> / 시뮬레이션 잔여일 <b style="color: var(--text);">{{ data.simulated_days_lecs or 0 }}일</b>)
+    </div>
+    <div>
+      📙 <b style="color: var(--green);">시간 기준 산식:</b> 평일 일평균 
+      <b style="color: var(--text);">{{ data.weekday_avg_hours or 0.0 }}h</b>, 주말 일평균 
+      <b style="color: var(--text);">{{ data.weekend_avg_hours or 0.0 }}h</b> 산정 
+      (잔여 <b style="color: var(--orange);">{{ data.remaining_hours or 0.0 }}h</b> / 시뮬레이션 잔여일 <b style="color: var(--text);">{{ data.simulated_days_hours or 0 }}일</b>)
+    </div>
   </div>
 </div>
 
@@ -282,17 +305,64 @@ setTimeout(() => {
 
 // ── 갱신 ──
 let refreshing = false;
+let pollInterval = null;
+
 async function triggerRefresh() {
   if (refreshing) return; refreshing = true;
   const btn = document.getElementById('refresh-btn'), icon = document.getElementById('ri');
   btn.disabled = true; icon.classList.add('spin');
-  showToast('🔄 스크래핑 시작... 약 30초');
+  showToast('🔄 갱신 요청 중...');
+  
   try {
     const res = await fetch('/api/refresh', {method:'POST'});
-    if (!res.ok) { const d=await res.json(); showToast('❌ '+(d.error||'오류'), true); reset(); return; }
-    setTimeout(() => location.reload(), 35000);
-  } catch { showToast('❌ 네트워크 오류', true); reset(); }
-  function reset() { btn.disabled=false; icon.classList.remove('spin'); refreshing=false; }
+    if (!res.ok) { 
+      const d = await res.json(); 
+      showToast('❌ ' + (d.error || '오류'), true); 
+      reset(); 
+      return; 
+    }
+    
+    // 폴링 시작
+    pollInterval = setInterval(pollRefreshStatus, 1000);
+  } catch { 
+    showToast('❌ 네트워크 오류', true); 
+    reset(); 
+  }
+
+  function reset() { 
+    btn.disabled = false; 
+    icon.classList.remove('spin'); 
+    refreshing = false; 
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
+}
+
+async function pollRefreshStatus() {
+  try {
+    const res = await fetch('/api/refresh-status');
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    if (data.status === "running") {
+      showToast(`🔄 갱신 중... (${data.current}/${data.total}) [${data.subject}] ${data.message}`);
+    } else if (data.status === "done") {
+      showToast(`✅ 갱신 완료! 화면을 새로고침합니다.`);
+      clearInterval(pollInterval);
+      setTimeout(() => location.reload(), 1000);
+    } else if (data.status === "error") {
+      showToast(`❌ 갱신 실패: ${data.message}`, true);
+      const btn = document.getElementById('refresh-btn'), icon = document.getElementById('ri');
+      btn.disabled = false;
+      icon.classList.remove('spin');
+      refreshing = false;
+      clearInterval(pollInterval);
+    }
+  } catch (err) {
+    console.error("폴링 오류:", err);
+  }
 }
 
 // ── 설정 ──

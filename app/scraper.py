@@ -8,7 +8,7 @@
 import os
 import re
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone, timedelta
 from typing import Optional
 
 import httpx
@@ -276,23 +276,31 @@ class UriCpaScraper:
             "avg_duration_min":  avg_duration_min,
         }
 
-    def fetch_all(self) -> dict:
+    def fetch_all(self, progress_callback=None) -> dict:
+        KST = timezone(timedelta(hours=9))
         results = []
         errors = []
-        for course in COURSES:
+        total = len(COURSES)
+        for i, course in enumerate(COURSES):
+            if progress_callback:
+                progress_callback(i, total, course["name"], "스크래핑 시작...")
             try:
                 logger.info(f"[{course['name']}] 스크래핑 시작")
                 data = self.fetch_course(course)
                 results.append(data)
                 logger.info(f"[{course['name']}] 완료: {data['completed']}/{data['total_lectures']}강")
+                if progress_callback:
+                    progress_callback(i + 1, total, course["name"], f"성공 ({data['completed']}/{data['total_lectures']}강)")
             except Exception as e:
                 logger.error(f"[{course['name']}] 스크래핑 실패: {e}")
                 errors.append({"course": course["name"], "error": str(e)})
+                if progress_callback:
+                    progress_callback(i + 1, total, course["name"], f"실패 ({str(e)})")
 
         return {
             "courses":    results,
             "errors":     errors,
-            "scraped_at": datetime.now().isoformat(),
+            "scraped_at": datetime.now(KST).isoformat(),
         }
 
     def close(self):
