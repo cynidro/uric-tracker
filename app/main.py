@@ -21,6 +21,7 @@ from app.calculator import calculate_progress
 from app.config import (
     get_cost_total, get_refresh_interval, has_credentials,
     load_config, save_config, set_cost_total,
+    get_excluded_dates, get_excluded_dates_raw, set_excluded_dates,
 )
 from app.scraper import UriCpaScraper
 
@@ -46,7 +47,8 @@ def run_scrape():
     scraper = UriCpaScraper()
     try:
         raw    = scraper.fetch_all()
-        result = calculate_progress(raw["courses"])
+        excluded = get_excluded_dates()
+        result = calculate_progress(raw["courses"], excluded_dates=excluded)
         result["errors"]     = raw.get("errors", [])
         result["scraped_at"] = raw["scraped_at"]
         DATA_FILE.write_text(
@@ -63,10 +65,11 @@ def load_cached() -> dict | None:
     if DATA_FILE.exists():
         try:
             data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-            # 구버전 캐시 감지 → 재계산
-            if data and ("weekly_comparison" not in data or "weekday_stats" not in data) and "courses" in data:
+            # 구버전 캐시 감지 (신규 시뮬레이션 필드 누락 등) → 재계산
+            if data and ("simulated_finish_lecs" not in data or "courses" not in data):
                 logger.info("구버전 캐시 감지 — 재계산 중...")
-                result = calculate_progress(data["courses"])
+                excluded = get_excluded_dates()
+                result = calculate_progress(data["courses"], excluded_dates=excluded)
                 result["errors"]     = data.get("errors", [])
                 result["scraped_at"] = data.get("scraped_at", "")
                 DATA_FILE.write_text(
@@ -112,6 +115,7 @@ async def dashboard(request: Request):
         "logged_in":  logged_in,
         "cost_total": cost_total,
         "saved_id":   cfg.get("uricpa_id", ""),
+        "excluded_dates_raw": get_excluded_dates_raw(),
     })
 
 
@@ -162,13 +166,32 @@ async def update_cost_total(body: dict):
             if c["id"] == "cost":
                 c["total_lectures"] = n
                 c["progress_pct"]   = round(c["completed"] / n * 100, 1) if n > 0 else 0.0
-        recalc = calculate_progress(data["courses"])
+        excluded = get_excluded_dates()
+        recalc = calculate_progress(data["courses"], excluded_dates=excluded)
         recalc["errors"]     = data.get("errors", [])
         recalc["scraped_at"] = data.get("scraped_at", "")
         DATA_FILE.write_text(
             json.dumps(recalc, ensure_ascii=False, indent=2), encoding="utf-8"
         )
     return JSONResponse({"status": "ok", "cost_total": n})
+
+
+@app.patch("/api/excluded-dates")
+async def update_excluded_dates(body: dict):
+    raw_str = str(body.get("dates", "")).strip()
+    set_excluded_dates(raw_str)
+
+    # 캐시 재계산
+    data = load_cached()
+    if data:
+        excluded = get_excluded_dates()
+        recalc = calculate_progress(data["courses"], excluded_dates=excluded)
+        recalc["errors"]     = data.get("errors", [])
+        recalc["scraped_at"] = data.get("scraped_at", "")
+        DATA_FILE.write_text(
+            json.dumps(recalc, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    return JSONResponse({"status": "ok", "excluded_dates_raw": raw_str})
 
 
 @app.get("/health")

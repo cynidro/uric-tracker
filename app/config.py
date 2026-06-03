@@ -54,3 +54,51 @@ def set_cost_total(n: int):
 def get_refresh_interval() -> int:
     cfg = load_config()
     return int(cfg.get("refresh_interval_minutes", 60))
+
+
+def parse_excluded_dates(raw_str: str) -> list[str]:
+    import re
+    from datetime import date, timedelta
+    dates = set()
+    parts = [p.strip() for p in raw_str.split(",") if p.strip()]
+    for part in parts:
+        m = re.match(r"(\d{4}-\d{2}-\d{2})\s*[~-]\s*(\d{4}-\d{2}-\d{2})", part)
+        if m:
+            start_str, end_str = m.groups()
+            try:
+                start = date.fromisoformat(start_str)
+                end = date.fromisoformat(end_str)
+                curr = start
+                while curr <= end:
+                    dates.add(curr.isoformat())
+                    curr += timedelta(days=1)
+            except ValueError:
+                continue
+        else:
+            m2 = re.match(r"(\d{4}-\d{2}-\d{2})", part)
+            if m2:
+                try:
+                    d = date.fromisoformat(m2.group(1))
+                    dates.add(d.isoformat())
+                except ValueError:
+                    continue
+    return sorted(list(dates))
+
+
+def get_excluded_dates_raw() -> str:
+    cfg = load_config()
+    return cfg.get("excluded_dates_raw", "")
+
+
+def get_excluded_dates() -> list[str]:
+    cfg = load_config()
+    return cfg.get("excluded_dates", [])
+
+
+def set_excluded_dates(raw_str: str):
+    cfg = load_config()
+    raw_str = raw_str.strip()
+    cfg["excluded_dates_raw"] = raw_str
+    cfg["excluded_dates"] = parse_excluded_dates(raw_str)
+    save_config(cfg)
+

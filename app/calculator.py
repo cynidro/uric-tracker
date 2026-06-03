@@ -6,6 +6,8 @@
 - 그 외 → 어제까지 기준
 - 완료 강의 시간 = duration_min (실제 강의 길이, watched_min 아님)
 - 원가관리 미업로드분 = 업로드된 강의 평균 시간으로 추산
+- 평일/주말 평균 수강량을 분리 계산하여, 미래 달력에 따른 시뮬레이션 기반 완강일 도출
+- 사용자가 설정한 제외 일자(여행 등)는 통계 및 경과일 계산에서 배제
 """
 
 from collections import Counter
@@ -23,20 +25,33 @@ def _get_cutoff() -> tuple[date, date]:
     return today, today if now.hour >= 23 else today - timedelta(days=1)
 
 
-def _window_pace(counts: Counter, window: int, cutoff: date) -> Optional[float]:
-    """cutoff 기준 최근 window일 평균"""
-    start = (cutoff - timedelta(days=window - 1)).isoformat()
-    end   = cutoff.isoformat()
-    total = sum(v for k, v in counts.items() if start <= k <= end)
-    return total / window
-
-
-def _finish(pace: Optional[float], remaining: float, today: date):
-    """잔여 / 페이스 → (잔여일, 완강일 str)"""
-    if not pace or pace <= 0 or remaining <= 0:
+def simulate_finish_date(remaining: float, wd_rate: float, we_rate: float, today_date: date) -> tuple[Optional[int], Optional[str]]:
+    """
+    오늘 이후 날짜로 하루씩 시뮬레이션하며 남은 수량이 0 이하가 되는 날을 구합니다.
+    """
+    if remaining <= 0:
+        return 0, today_date.isoformat()
+    
+    # 주당 평균이 0 이하인 경우 무한루프 방지
+    weekly_sum = 5 * wd_rate + 2 * we_rate
+    if weekly_sum <= 0:
         return None, None
-    days = ceil(remaining / pace)
-    return days, (today + timedelta(days=days)).isoformat()
+    
+    curr = today_date
+    val = remaining
+    days = 0
+    while val > 0:
+        curr += timedelta(days=1)
+        days += 1
+        if curr.weekday() < 5:  # 평일
+            val -= wd_rate
+        else:                  # 주말
+            val -= we_rate
+            
+        if days > 3650:  # 최대 10년 안전장치
+            return None, None
+            
+    return days, curr.isoformat()
 
 
 # ── 잔여 시간 계산 ────────────────────────────────────────────
@@ -73,19 +88,46 @@ def calc_remaining_hours(courses: list) -> float:
 
 # ── 주말/평일 분석 ────────────────────────────────────────────
 
-def analyze_weekday_weekend(date_counts: Counter, time_per_day: Counter) -> dict:
+def analyze_weekday_weekend(date_counts: Counter, time_per_day: Counter, first_date: Optional[date], cutoff: date, excluded_dates: list[str]) -> dict:
+    """
+    first_date부터 cutoff까지의 날짜 중 제외 일자를 빼고
+    평일과 주말의 하루 평균 강의수 및 평균 수강시간을 집계합니다.
+    """
     wd_lec, we_lec = [], []
     wd_hrs, we_hrs = [], []
+    
+    ex_set = set(excluded_dates)
 
-    for d_str, cnt in date_counts.items():
-        d   = date.fromisoformat(d_str)
-        hrs = time_per_day.get(d_str, 0) / 60.0
-        if d.weekday() < 5:          # 월~금
-            wd_lec.append(cnt); wd_hrs.append(hrs)
-        else:                         # 토~일
-            we_lec.append(cnt); we_hrs.append(hrs)
+    if not first_date or first_date > cutoff:
+        return {
+            "weekday_avg_lecs": 0.0,
+            "weekend_avg_lecs": 0.0,
+            "weekday_avg_hours": 0.0,
+            "weekend_avg_hours": 0.0,
+            "weekday_days": 0,
+            "weekend_days": 0,
+        }
 
-    def avg(lst): return round(sum(lst) / len(lst), 2) if lst else None
+    curr = first_date
+    while curr <= cutoff:
+        curr_str = curr.isoformat()
+        if curr_str in ex_set:
+            curr += timedelta(days=1)
+            continue
+            
+        cnt = date_counts.get(curr_str, 0)
+        hrs = time_per_day.get(curr_str, 0) / 60.0
+        
+        if curr.weekday() < 5:  # 월~금
+            wd_lec.append(cnt)
+            wd_hrs.append(hrs)
+        else:                  # 토~일
+            we_lec.append(cnt)
+            we_hrs.append(hrs)
+            
+        curr += timedelta(days=1)
+
+    def avg(lst): return round(sum(lst) / len(lst), 2) if lst else 0.0
 
     return {
         "weekday_avg_lecs":  avg(wd_lec),
@@ -99,8 +141,10 @@ def analyze_weekday_weekend(date_counts: Counter, time_per_day: Counter) -> dict
 
 # ── 메인 계산 ─────────────────────────────────────────────────
 
-def calculate_progress(courses: list) -> dict:
+def calculate_progress(courses: list, excluded_dates: Optional[list[str]] = None) -> dict:
     today, cutoff = _get_cutoff()
+    ex_dates = excluded_dates or []
+    ex_set = set(ex_dates)
 
     # ── 날짜별 강의수 / 시간 집계 (cutoff까지) ──────────────
     date_counts: Counter = Counter()   # 날짜 → 완료 강의수
@@ -123,46 +167,43 @@ def calculate_progress(courses: list) -> dict:
                    if c.get("first_watched_date")]
     first_date  = date.fromisoformat(min(first_dates)) if first_dates else None
 
+    # 제외일을 제외한 누적 경과일수 계산
     days_elapsed = 0
     if first_date and first_date <= cutoff:
-        days_elapsed = (cutoff - first_date).days + 1
+        curr = first_date
+        while curr <= cutoff:
+            if curr.isoformat() not in ex_set:
+                days_elapsed += 1
+            curr += timedelta(days=1)
 
-    # ── 전체 평균 ─────────────────────────────────────────────
-    total_lec_to_cutoff = sum(date_counts.values())
-    total_min_to_cutoff = sum(time_per_day.values())
+    # ── 전체 평균 (제외일 제외) ─────────────────────────────────
+    total_lec_to_cutoff = sum(cnt for d, cnt in date_counts.items() if d not in ex_set)
+    total_min_to_cutoff = sum(mins for d, mins in time_per_day.items() if d not in ex_set)
 
-    overall_avg   = (total_lec_to_cutoff / days_elapsed) if days_elapsed > 0 else None
-    overall_avg_h = (total_min_to_cutoff / 60.0 / days_elapsed) if days_elapsed > 0 else None
+    overall_avg   = (total_lec_to_cutoff / days_elapsed) if days_elapsed > 0 else 0.0
+    overall_avg_h = (total_min_to_cutoff / 60.0 / days_elapsed) if days_elapsed > 0 else 0.0
 
-    # ── 윈도우 페이스 ─────────────────────────────────────────
-    pace_7d   = _window_pace(date_counts,  7, cutoff)
-    pace_3d   = _window_pace(date_counts,  3, cutoff)
-    pace_7d_m = _window_pace(time_per_day, 7, cutoff)   # 분 단위
-    pace_3d_m = _window_pace(time_per_day, 3, cutoff)
-    pace_7d_h = pace_7d_m / 60.0 if pace_7d_m is not None else None
-    pace_3d_h = pace_3d_m / 60.0 if pace_3d_m is not None else None
+    # ── 평일/주말 평균 수강 패턴 추출 ─────────────────────────
+    weekday_stats = analyze_weekday_weekend(date_counts, time_per_day, first_date, cutoff, ex_dates)
 
-    # ── 완강 예상 (강의 기준) ─────────────────────────────────
-    d_all, f_all = _finish(overall_avg, remaining, today)
-    d_7d,  f_7d  = _finish(pace_7d,    remaining, today)
-    d_3d,  f_3d  = _finish(pace_3d,    remaining, today)
+    wd_lec_rate = weekday_stats["weekday_avg_lecs"]
+    we_lec_rate = weekday_stats["weekend_avg_lecs"]
+    wd_hour_rate = weekday_stats["weekday_avg_hours"]
+    we_hour_rate = weekday_stats["weekend_avg_hours"]
 
-    # ── 완강 예상 (시간 기준) ─────────────────────────────────
-    dh_7d, fh_7d = _finish(pace_7d_h, remaining_hours, today)
-    dh_3d, fh_3d = _finish(pace_3d_h, remaining_hours, today)
+    # ── 달력 시뮬레이션 기반 완강일 ───────────────────────────
+    sim_days_lec, sim_finish_lec = simulate_finish_date(remaining, wd_lec_rate, we_lec_rate, today)
+    sim_days_hour, sim_finish_hour = simulate_finish_date(remaining_hours, wd_hour_rate, we_hour_rate, today)
 
-    # ── 주말/평일 분석 ────────────────────────────────────────
-    weekday_stats = analyze_weekday_weekend(date_counts, time_per_day)
-
-    # ── 이번 주 vs 지난 주 비교 (WoW) ───────────────────────────
+    # ── 이번 주 vs 지난 주 비교 (WoW) (제외일 반영) ────────────
     this_monday = cutoff - timedelta(days=cutoff.weekday())
     last_monday = this_monday - timedelta(days=7)
 
-    last_week_wd_days = [last_monday + timedelta(days=i) for i in range(5)]
-    last_week_we_days = [last_monday + timedelta(days=i) for i in [5, 6]]
+    last_week_wd_days = [last_monday + timedelta(days=i) for i in range(5) if (last_monday + timedelta(days=i)).isoformat() not in ex_set]
+    last_week_we_days = [last_monday + timedelta(days=i) for i in [5, 6] if (last_monday + timedelta(days=i)).isoformat() not in ex_set]
 
-    this_week_wd_days = [this_monday + timedelta(days=i) for i in range(5) if this_monday + timedelta(days=i) <= cutoff]
-    this_week_we_days = [this_monday + timedelta(days=i) for i in [5, 6] if this_monday + timedelta(days=i) <= cutoff]
+    this_week_wd_days = [this_monday + timedelta(days=i) for i in range(5) if this_monday + timedelta(days=i) <= cutoff and (this_monday + timedelta(days=i)).isoformat() not in ex_set]
+    this_week_we_days = [this_monday + timedelta(days=i) for i in [5, 6] if this_monday + timedelta(days=i) <= cutoff and (this_monday + timedelta(days=i)).isoformat() not in ex_set]
 
     def _get_days_sum(days_list):
         lecs = sum(date_counts.get(d.isoformat(), 0) for d in days_list)
@@ -172,11 +213,13 @@ def calculate_progress(courses: list) -> dict:
     last_wd_lecs, last_wd_mins = _get_days_sum(last_week_wd_days)
     last_we_lecs, last_we_mins = _get_days_sum(last_week_we_days)
 
-    last_wd_avg_lecs = round(last_wd_lecs / 5, 2)
-    last_wd_avg_hours = round(last_wd_mins / 5 / 60.0, 2)
+    n_l_wd = len(last_week_wd_days)
+    last_wd_avg_lecs = round(last_wd_lecs / n_l_wd, 2) if n_l_wd > 0 else 0.0
+    last_wd_avg_hours = round(last_wd_mins / n_l_wd / 60.0, 2) if n_l_wd > 0 else 0.0
 
-    last_we_avg_lecs = round(last_we_lecs / 2, 2)
-    last_we_avg_hours = round(last_we_mins / 2 / 60.0, 2)
+    n_l_we = len(last_week_we_days)
+    last_we_avg_lecs = round(last_we_lecs / n_l_we, 2) if n_l_we > 0 else 0.0
+    last_we_avg_hours = round(last_we_mins / n_l_we / 60.0, 2) if n_l_we > 0 else 0.0
 
     this_wd_avg_lecs, this_wd_avg_hours = None, None
     if this_week_wd_days:
@@ -241,26 +284,27 @@ def calculate_progress(courses: list) -> dict:
         "days_elapsed":      days_elapsed,
         "today":             today.isoformat(),
         "cutoff":            cutoff.isoformat(),
-        # 강의 기준 페이스
-        "daily_avg":         round(overall_avg, 2)   if overall_avg else None,
-        "pace_7d":           round(pace_7d, 2)       if pace_7d    else None,
-        "pace_3d":           round(pace_3d, 2)       if pace_3d    else None,
-        "days_to_finish":    d_all,
-        "days_to_finish_7d": d_7d,
-        "days_to_finish_3d": d_3d,
-        "expected_finish":   f_all,
-        "expected_finish_7d": f_7d,
-        "expected_finish_3d": f_3d,
-        # 시간 기준 페이스 (7일/3일)
-        "pace_7d_hours":          round(pace_7d_h, 2) if pace_7d_h else None,
-        "pace_3d_hours":          round(pace_3d_h, 2) if pace_3d_h else None,
-        "days_to_finish_7d_h":    dh_7d,
-        "days_to_finish_3d_h":    dh_3d,
-        "expected_finish_7d_h":   fh_7d,
-        "expected_finish_3d_h":   fh_3d,
-        # 주말/평일
+        # 평일/주말 평균 요율
+        "daily_avg":         round(overall_avg, 2)   if overall_avg else 0.0,
+        "weekday_avg_lecs":  wd_lec_rate,
+        "weekend_avg_lecs":  we_lec_rate,
+        "weekday_avg_hours": wd_hour_rate,
+        "weekend_avg_hours": we_hour_rate,
+        # 시뮬레이션 결과 완강 예정일
+        "simulated_finish_lecs":  sim_finish_lec,
+        "simulated_finish_hours": sim_finish_hour,
+        "simulated_days_lecs":     sim_days_lec,
+        "simulated_days_hours":    sim_days_hour,
+        # (구버전 호환용 기본 예상일 매핑)
+        "expected_finish":   sim_finish_lec,
+        "expected_finish_7d": sim_finish_lec,
+        "expected_finish_3d": sim_finish_lec,
+        "expected_finish_7d_h": sim_finish_hour,
+        "expected_finish_3d_h": sim_finish_hour,
+        # 주말/평일 상세 통계
         "weekday_stats":      weekday_stats,
         "weekly_comparison":  weekly_comparison,
         "courses":            courses,
     }
+
 
