@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -179,39 +181,26 @@
 </div>
 
 <!-- PACE (SIMULATED FINISH) -->
-<div class="section-label">📅 현재 패턴 기준 완강 예상</div>
-<div class="pace-grid">
-
-  <!-- 강의 기준 -->
-  <div class="card pace-card pc-lec" style="padding: 16px 20px;">
-    <div class="pace-title">📊 강의수 기준 완강 예정일</div>
-    <div style="margin-top: 10px;">
-      <div style="font-size: 1.4rem; font-weight: 800; color: var(--blue);">
-        {% if data.simulated_finish_lecs %}{{ data.simulated_finish_lecs }}{% else %}—{% endif %}
-      </div>
-      <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">
-        평일 {% if data.weekday_avg_lecs is not none %}{{ data.weekday_avg_lecs }}강{% else %}—{% endif %} / 
-        주말 {% if data.weekend_avg_lecs is not none %}{{ data.weekend_avg_lecs }}강{% else %}—{% endif %} 패턴 시뮬레이션
-        {% if data.simulated_days_lecs is not none %}(D-{{ data.simulated_days_lecs }}일){% endif %}
-      </div>
-    </div>
+<div class="card pace-card pc-lec" style="margin-bottom:14px; padding: 12px 16px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 24px; font-size: 0.85rem; font-weight: 700;">
+  <div style="display: flex; align-items: center; gap: 6px;">
+    <span style="color: var(--muted); font-size: 0.75rem;">📊 강의수 기준 완강:</span>
+    <span style="color: var(--blue); font-size: 0.95rem;">
+      {% if data.simulated_finish_lecs %}{{ data.simulated_finish_lecs }}{% else %}—{% endif %}
+    </span>
+    {% if data.simulated_days_lecs is not none %}
+      <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_lecs }}일)</span>
+    {% endif %}
   </div>
-
-  <!-- 시간 기준 -->
-  <div class="card pace-card pc-time" style="padding: 16px 20px;">
-    <div class="pace-title">⏱ 수강시간 기준 완강 예정일</div>
-    <div style="margin-top: 10px;">
-      <div style="font-size: 1.4rem; font-weight: 800; color: var(--green);">
-        {% if data.simulated_finish_hours %}{{ data.simulated_finish_hours }}{% else %}—{% endif %}
-      </div>
-      <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">
-        평일 {% if data.weekday_avg_hours is not none %}{{ data.weekday_avg_hours }}h{% else %}—{% endif %} / 
-        주말 {% if data.weekend_avg_hours is not none %}{{ data.weekend_avg_hours }}h{% else %}—{% endif %} 패턴 시뮬레이션
-        {% if data.simulated_days_hours is not none %}(D-{{ data.simulated_days_hours }}일){% endif %}
-      </div>
-    </div>
+  <div style="color: var(--bd); font-weight: normal; font-size: 0.8rem;">|</div>
+  <div style="display: flex; align-items: center; gap: 6px;">
+    <span style="color: var(--muted); font-size: 0.75rem;">⏱ 수강시간 기준 완강:</span>
+    <span style="color: var(--green); font-size: 0.95rem;">
+      {% if data.simulated_finish_hours %}{{ data.simulated_finish_hours }}{% else %}—{% endif %}
+    </span>
+    {% if data.simulated_days_hours is not none %}
+      <span style="color: var(--muted); font-size: 0.72rem; font-weight: normal;">(D-{{ data.simulated_days_hours }}일)</span>
+    {% endif %}
   </div>
-
 </div>
 
 <!-- 설정 조절 패널 (원가관리 & 분석 제외 일자) -->
@@ -229,130 +218,24 @@
   
   <div style="border-top:1px dashed var(--bd);"></div>
 
-  <!-- 분석 제외 일자 조정 -->
-  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-    <div style="font-size:.78rem;color:var(--muted)">📅 <b style="color:var(--blue)">분석 제외 일자</b> (여행, 휴가 등 통계 제외)</div>
-    <div class="cost-edit" style="flex-grow:1; justify-content:flex-end;">
-      <input type="text" id="ex-dates-inp" style="width:240px; background:var(--s2); border:1px solid var(--bd); border-radius:6px; color:var(--text); font-size:.8rem; padding:5px 8px; font-family:inherit;" value="{{ excluded_dates_raw }}" placeholder="예: 2026-05-10~2026-05-12, 2026-05-20"/>
-      <button class="btn-save" onclick="saveExcludedDates()">저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- WEEKLY COMPARISON (WoW) -->
-{% set wc = data.weekly_comparison if data and data.weekly_comparison else {} %}
-<div class="section-label">📈 이번 주 vs 지난 주 비교 (WoW)</div>
-<div class="pace-grid" style="margin-bottom:14px">
-
-  <!-- 평일 비교 -->
-  <div class="card pace-card pc-lec" style="padding: 12px 14px;">
-    <div class="pace-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-      <span>📅 평일 추이 (월~금)</span>
-      <span style="font-size: 0.62rem; color: var(--muted); font-weight:normal;">이번 주 {{ wc.this_week_wd.days_count if wc.this_week_wd else 0 }}일 집계</span>
-    </div>
-    
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-      <!-- 시간 비교 (가장 중요) -->
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 시간</span>
-        <div style="text-align: right;">
-          <div style="font-size: 1.1rem; font-weight: 800; color: var(--blue);">
-            {% if wc.this_week_wd and wc.this_week_wd.avg_hours is not none %}{{ wc.this_week_wd.avg_hours }}h{% else %}—{% endif %}
-            <span style="font-size: 0.68rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
-              / 지난주 {{ wc.last_week_wd.avg_hours if wc.last_week_wd else 0 }}h
-            </span>
-          </div>
-          {% if wc.wd_hour_delta is not none %}
-            <div style="font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 2px; margin-top: 1px;
-              {% if wc.wd_hour_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
-              {% if wc.wd_hour_delta >= 0 %}▲ +{{ wc.wd_hour_delta }}h{% else %}▼ {{ wc.wd_hour_delta }}h{% endif %}
-            </div>
-          {% endif %}
-        </div>
-      </div>
-      
-      <div style="border-top: 1px dashed var(--bd); margin: 1px 0;"></div>
-      
-      <!-- 강의수 비교 -->
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 강의수</span>
-        <div style="text-align: right;">
-          <div style="font-size: 0.9rem; font-weight: 700; color: var(--text);">
-            {% if wc.this_week_wd and wc.this_week_wd.avg_lecs is not none %}{{ wc.this_week_wd.avg_lecs }}강{% else %}—{% endif %}
-            <span style="font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
-              / 지난주 {{ wc.last_week_wd.avg_lecs if wc.last_week_wd else 0 }}강
-            </span>
-          </div>
-          {% if wc.wd_lec_delta is not none %}
-            <div style="font-size: 0.62rem; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;
-              {% if wc.wd_lec_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
-              {% if wc.wd_lec_delta >= 0 %}▲ +{{ wc.wd_lec_delta }}강{% else %}▼ {{ wc.wd_lec_delta }}강{% endif %}
-            </div>
-          {% endif %}
+  <!-- 분석 제외 일자 조정 (캘린더 아코디언) -->
+  <details style="width:100%;">
+    <summary style="font-size:.78rem; color:var(--muted); cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; outline:none; user-select:none;">
+      <span>📅 <b style="color:var(--blue)">분석 제외 일자 설정</b> (여행, 휴가 등 통계 제외)</span>
+      <span style="font-size:0.7rem; color:var(--muted);">접기/펴기 ▾</span>
+    </summary>
+    <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center;">
+      <input type="text" id="ex-dates-picker" style="display:none;"/>
+      <div id="calendar-container" style="width:100%; max-width:320px;"></div>
+      <div style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:4px;">
+        <span style="font-size:0.72rem; color:var(--muted);">선택된 기간: <b id="selected-range-label" style="color:var(--blue);">{% if excluded_dates_raw %}{{ excluded_dates_raw }}{% else %}없음{% endif %}</b></span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-save" style="background:rgba(239,68,68,.15); color:var(--red); border-color:rgba(239,68,68,.3);" onclick="clearExcludedDates()">초기화</button>
+          <button class="btn-save" onclick="saveExcludedDates()">반영하기</button>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 주말 비교 -->
-  <div class="card pace-card pc-time" style="padding: 12px 14px;">
-    <div class="pace-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-      <span>🏖 주말 추이 (토~일)</span>
-      <span style="font-size: 0.62rem; color: var(--muted); font-weight:normal;">
-        {% if wc.this_week_we and wc.this_week_we.days_count > 0 %}이번 주 {{ wc.this_week_we.days_count }}일 집계{% else %}주말 집계 전{% endif %}
-      </span>
-    </div>
-    
-    {% if wc.this_week_we and wc.this_week_we.days_count > 0 %}
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-      <!-- 시간 비교 (가장 중요) -->
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 시간</span>
-        <div style="text-align: right;">
-          <div style="font-size: 1.1rem; font-weight: 800; color: var(--orange);">
-            {% if wc.this_week_we.avg_hours is not none %}{{ wc.this_week_we.avg_hours }}h{% else %}—{% endif %}
-            <span style="font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
-              / 지난주 {{ wc.last_week_we.avg_hours if wc.last_week_we else 0 }}h
-            </span>
-          </div>
-          {% if wc.we_hour_delta is not none %}
-            <div style="font-size: 0.65rem; font-weight: 700; display: inline-flex; align-items: center; gap: 2px; margin-top: 1px;
-              {% if wc.we_hour_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
-              {% if wc.we_hour_delta >= 0 %}▲ +{{ wc.we_hour_delta }}h{% else %}▼ {{ wc.we_hour_delta }}h{% endif %}
-            </div>
-          {% endif %}
-        </div>
-      </div>
-      
-      <div style="border-top: 1px dashed var(--bd); margin: 1px 0;"></div>
-      
-      <!-- 강의수 비교 -->
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 500;">일평균 강의수</span>
-        <div style="text-align: right;">
-          <div style="font-size: 0.9rem; font-weight: 700; color: var(--text);">
-            {% if wc.this_week_we and wc.this_week_we.avg_lecs is not none %}{{ wc.this_week_we.avg_lecs }}강{% else %}—{% endif %}
-            <span style="font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 2px;">
-              / 지난주 {{ wc.last_week_we.avg_lecs if wc.last_week_we else 0 }}강
-            </span>
-          </div>
-          {% if wc.we_lec_delta is not none %}
-            <div style="font-size: 0.62rem; font-weight: 600; display: inline-flex; align-items: center; gap: 2px;
-              {% if wc.we_lec_delta >= 0 %}color: var(--green);{% else %}color: var(--red);{% endif %}">
-              {% if wc.we_lec_delta >= 0 %}▲ +{{ wc.we_lec_delta }}강{% else %}▼ {{ wc.we_lec_delta }}강{% endif %}
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 52px; text-align: center;">
-      <div style="font-size: 0.75rem; color: var(--muted); font-weight: 500;">주말 학습 집계 대기 중</div>
-      <div style="font-size: 0.6rem; color: var(--muted); margin-top: 1px;">(토요일 밤 11시 이후부터 당일 반영)</div>
-    </div>
-    {% endif %}
-  </div>
-
+  </details>
 </div>
 
 {% endif %}
@@ -362,11 +245,35 @@
 
 <div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 // ── 데이터 ──
 const D = {
   overallPct:   {{ data.overall_pct     if data else 0 }},
 };
+
+let picker;
+document.addEventListener("DOMContentLoaded", () => {
+  picker = flatpickr("#ex-dates-picker", {
+    mode: "range",
+    inline: true,
+    appendTo: document.getElementById('calendar-container'),
+    dateFormat: "Y-m-d",
+    defaultDate: "{{ excluded_dates_raw }}".split("~").map(s => s.trim()).filter(Boolean),
+    onChange: function(selectedDates, dateStr, instance) {
+      const label = document.getElementById('selected-range-label');
+      if (selectedDates.length === 2) {
+        const start = instance.formatDate(selectedDates[0], "Y-m-d");
+        const end = instance.formatDate(selectedDates[1], "Y-m-d");
+        label.textContent = `${start} ~ ${end}`;
+      } else if (selectedDates.length === 1) {
+        label.textContent = instance.formatDate(selectedDates[0], "Y-m-d");
+      } else {
+        label.textContent = "없음";
+      }
+    }
+  });
+});
 
 setTimeout(() => {
   const ob = document.getElementById('overall-bar');
@@ -420,10 +327,21 @@ async function saveCostTotal() {
 
 // ── 분석 제외 일자 저장 ──
 async function saveExcludedDates() {
-  const val = document.getElementById('ex-dates-inp').value.trim();
+  const labelVal = document.getElementById('selected-range-label').textContent.trim();
+  const val = labelVal === "없음" ? "" : labelVal.replace(/\s+/g, "");
   const res = await fetch('/api/excluded-dates',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({dates:val})});
-  if (!res.ok) { showToast('❌ 저장 실패', true); return; }
-  showToast(`✅ 분석 제외 일자 저장 완료`);
+  if (!res.ok) { showToast('❌ 반영 실패', true); return; }
+  showToast(`✅ 제외 일자가 완강 계산에 반영되었습니다.`);
+  setTimeout(() => location.reload(), 1200);
+}
+
+// ── 분석 제외 일자 초기화 ──
+async function clearExcludedDates() {
+  if (picker) picker.clear();
+  document.getElementById('selected-range-label').textContent = "없음";
+  const res = await fetch('/api/excluded-dates',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({dates:""})});
+  if (!res.ok) { showToast('❌ 초기화 실패', true); return; }
+  showToast(`✅ 제외 일자가 초기화되었습니다.`);
   setTimeout(() => location.reload(), 1200);
 }
 
