@@ -212,17 +212,34 @@
   <!-- 하단 상세 계산 산식 (근거) -->
   <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.68rem; color: var(--muted); line-height: 1.4; width:100%; align-items: center; text-align: center;">
     <div>
-      📘 <b style="color: var(--blue);">강의수 산식:</b> 평일 일평균 
-      <b style="color: var(--text);">{{ data.weekday_avg_lecs or 0.0 }}강</b>, 주말 일평균 
-      <b style="color: var(--text);">{{ data.weekend_avg_lecs or 0.0 }}강</b> 산정 
-      (잔여 <b style="color: var(--orange);">{{ data.remaining or 0 }}강</b> / 시뮬레이션 잔여일 <b style="color: var(--text);">{{ data.simulated_days_lecs or 0 }}일</b>)
+      📘 <b style="color: var(--blue);">강의수 산식 (가중평균 적용):</b> 평일 
+      <b style="color: var(--text);">{{ data.weekday_avg_lecs or 0.0 }}강</b>, 주말 
+      <b style="color: var(--text);">{{ data.weekend_avg_lecs or 0.0 }}강</b> 
+      (잔여 <b style="color: var(--orange);">{{ data.remaining or 0 }}강</b> / 시뮬레이션 <b style="color: var(--text);">{{ data.simulated_days_lecs or 0 }}일</b>)
     </div>
     <div>
-      📙 <b style="color: var(--green);">시간 기준 산식:</b> 평일 일평균 
-      <b style="color: var(--text);">{{ data.weekday_avg_hours or 0.0 }}h</b>, 주말 일평균 
-      <b style="color: var(--text);">{{ data.weekend_avg_hours or 0.0 }}h</b> 산정 
-      (잔여 <b style="color: var(--orange);">{{ data.remaining_hours or 0.0 }}h</b> / 시뮬레이션 잔여일 <b style="color: var(--text);">{{ data.simulated_days_hours or 0 }}일</b>)
+      📙 <b style="color: var(--green);">시간 산식 (가중평균 적용):</b> 평일 
+      <b style="color: var(--text);">{{ data.weekday_avg_hours or 0.0 }}h</b>, 주말 
+      <b style="color: var(--text);">{{ data.weekend_avg_hours or 0.0 }}h</b> 
+      (잔여 <b style="color: var(--orange);">{{ data.remaining_hours or 0.0 }}h</b> / 시뮬레이션 <b style="color: var(--text);">{{ data.simulated_days_hours or 0 }}일</b>)
     </div>
+  </div>
+
+  <div style="border-top: 1px dashed var(--bd); width: 100%; margin: 2px 0;"></div>
+
+  <!-- 진행 중인 과목별 예상 종강일 -->
+  <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.72rem; width:100%; align-items: center; text-align: center; margin-top: 2px;">
+    <span style="color: var(--muted); font-size: 0.65rem; font-weight: bold; letter-spacing: 0.05em; margin-bottom: 2px;">📚 진행 중인 과목 완강 예정 (교재 준비용)</span>
+    {% for c in data.courses %}
+      {% if c.completed < c.total_lectures %}
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; color: var(--text);">
+          <span style="color: {{ c.color }}; font-weight: 700;">{{ c.name }}:</span>
+          <span>강의수 기준 <b style="color: var(--blue);">{{ c.simulated_finish_lecs }}</b></span>
+          <span style="color: var(--muted); font-weight: normal;">/</span>
+          <span>시간 기준 <b style="color: var(--green);">{{ c.simulated_finish_hours }}</b></span>
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
 </div>
 
@@ -230,7 +247,13 @@
 <div class="card" style="margin-bottom:14px; display:flex; flex-direction:column; gap:12px;">
   <!-- 원가관리 강의수 조정 -->
   <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-    <div style="font-size:.78rem;color:var(--muted)">🟠 <b style="color:var(--orange)">원가관리</b> 총 강의수 (조정 가능)</div>
+    {% set cost_c = none %}
+    {% for c in data.courses %}
+      {% if c.id == 'cost' %}
+        {% set cost_c = c %}
+      {% endif %}
+    {% endfor %}
+    <div style="font-size:.78rem;color:var(--muted)">🟠 <b style="color:var(--orange)">원가관리</b> 총 강의수 (실제 업로드: {% if cost_c %}{{ cost_c.total_from_page }}{% else %}—{% endif %}강)</div>
     <div class="cost-edit">
       <span class="cost-label">예상 총 강의수:</span>
       <input type="number" id="cost-inp" class="cost-input" value="{{ cost_total }}" min="1" max="300"/>
