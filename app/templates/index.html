@@ -259,12 +259,13 @@
 <div class="card" style="margin-bottom:14px; display:flex; flex-direction:column; gap:12px;">
   <!-- 원가관리 강의수 조정 -->
   <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-    {% set cost_c = none %}
+    {% set ns = namespace(cost_c=none) %}
     {% for c in data.courses %}
       {% if c.id == 'cost' %}
-        {% set cost_c = c %}
+        {% set ns.cost_c = c %}
       {% endif %}
     {% endfor %}
+    {% set cost_c = ns.cost_c %}
     <div style="font-size:.78rem;color:var(--muted)">🟠 <b style="color:var(--orange)">원가관리</b> 총 강의수 (실제 업로드: {% if cost_c and cost_c.total_from_page and cost_c.total_from_page > 0 %}{{ cost_c.total_from_page }}{% elif cost_c and cost_c.lectures %}{{ cost_c.lectures|length }}{% else %}—{% endif %}강)</div>
     <div class="cost-edit">
       <span class="cost-label">예상 총 강의수:</span>
