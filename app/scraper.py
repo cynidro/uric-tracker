@@ -169,11 +169,37 @@ class UriCpaScraper:
     def _parse_course_page(self, soup: BeautifulSoup, course: dict) -> dict:
         lectures = []
         total_count_from_page = 0
-        header_text = soup.get_text()
 
-        m = re.search(r"강의수\s*[\s\S]{0,30}?(\d+)\s*강", header_text)
-        if m:
-            total_count_from_page = int(m.group(1))
+        # 방법 1: '강의수' 레이블 div의 형제 div에서 숫자 추출 (가장 정확한 방법)
+        # HTML 구조: <div>강의수</div><div><span>32강 [...]</span></div>
+        for lec_label in soup.find_all(string=lambda t: t and t.strip() == "강의수"):
+            parent_div = lec_label.parent
+            if parent_div:
+                grandparent = parent_div.parent
+                if grandparent:
+                    # 형제 요소들을 순회하며 '강의수' 다음 div에서 숫자 추출
+                    found_label = False
+                    for sibling in grandparent.children:
+                        if sibling == parent_div:
+                            found_label = True
+                            continue
+                        if found_label and hasattr(sibling, 'get_text'):
+                            sib_text = sibling.get_text(strip=True)
+                            m2 = re.search(r"(\d+)\s*강", sib_text)
+                            if m2:
+                                total_count_from_page = int(m2.group(1))
+                                logger.info(f"[{course['name']}] 형제 div 파싱 성공: {total_count_from_page}강")
+                                break
+            if total_count_from_page > 0:
+                break
+
+        # 방법 2: 전체 텍스트에서 regex 폴백 (방법 1 실패 시)
+        header_text = soup.get_text()
+        if total_count_from_page == 0:
+            m = re.search(r"강의수\s*[\s\S]{0,30}?(\d+)\s*강", header_text)
+            if m:
+                total_count_from_page = int(m.group(1))
+                logger.info(f"[{course['name']}] regex 폴백 파싱 성공: {total_count_from_page}강")
 
         start_date = None
         m2 = re.search(r"(\d{4}\.\d{2}\.\d{2})\s*~", header_text)
