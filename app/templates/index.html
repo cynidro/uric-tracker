@@ -207,25 +207,7 @@
     </div>
   </div>
   
-  <div style="border-top: 1px dashed var(--bd); width: 100%; margin: 2px 0;"></div>
-  
-  <!-- 하단 상세 계산 산식 (근거) -->
-  <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.68rem; color: var(--muted); line-height: 1.4; width:100%; align-items: center; text-align: center;">
-    <div>
-      📘 <b style="color: var(--blue);">강의수 산식 (가중평균 적용):</b> 평일 
-      <b style="color: var(--text);">{{ data.weekday_avg_lecs or 0.0 }}강</b>, 주말 
-      <b style="color: var(--text);">{{ data.weekend_avg_lecs or 0.0 }}강</b> 
-      (잔여 <b style="color: var(--orange);">{{ data.remaining or 0 }}강</b> / 시뮬레이션 <b style="color: var(--text);">{{ data.simulated_days_lecs or 0 }}일</b>)
-    </div>
-    <div>
-      📙 <b style="color: var(--green);">시간 산식 (가중평균 적용):</b> 평일 
-      <b style="color: var(--text);">{{ data.weekday_avg_hours or 0.0 }}h</b>, 주말 
-      <b style="color: var(--text);">{{ data.weekend_avg_hours or 0.0 }}h</b> 
-      (잔여 <b style="color: var(--orange);">{{ data.remaining_hours or 0.0 }}h</b> / 시뮬레이션 <b style="color: var(--text);">{{ data.simulated_days_hours or 0 }}일</b>)
-    </div>
-  </div>
 
-  <div style="border-top: 1px dashed var(--bd); width: 100%; margin: 2px 0;"></div>
 
   <!-- 진행 중인 과목별 예상 종강일 -->
   <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.72rem; width:100%; align-items: center; text-align: center; margin-top: 2px;">
@@ -237,9 +219,9 @@
             {% if c.is_active %}[수강중] {% endif %}{{ c.name }}:
           </span>
           {% if c.is_active %}
-            <span>강의수 기준 <b style="color: var(--blue);">{{ c.simulated_finish_lecs }}</b></span>
+            <b style="color: var(--blue);">{{ c.simulated_finish_lecs[5:].replace('-', '/') }}(D-{{ c.simulated_days_lecs }})</b>
             <span style="color: var(--muted); font-weight: normal;">/</span>
-            <span>시간 기준 <b style="color: var(--green);">{{ c.simulated_finish_hours }}</b></span>
+            <b style="color: var(--green);">{{ c.simulated_finish_hours[5:].replace('-', '/') }}(D-{{ c.simulated_days_hours }})</b>
           {% else %}
             <span style="color: var(--muted);">대기 중 (예상 소요: 약 <b style="color: var(--blue);">{{ c.simulated_days_lecs }}일</b> / <b style="color: var(--green);">{{ c.simulated_days_hours }}일</b>)</span>
           {% endif %}
@@ -259,7 +241,7 @@
         {% set cost_c = c %}
       {% endif %}
     {% endfor %}
-    <div style="font-size:.78rem;color:var(--muted)">🟠 <b style="color:var(--orange)">원가관리</b> 총 강의수 (실제 업로드: {% if cost_c %}{{ cost_c.total_from_page }}{% else %}—{% endif %}강)</div>
+    <div style="font-size:.78rem;color:var(--muted)">🟠 <b style="color:var(--orange)">원가관리</b> 총 강의수 (실제 업로드: {% if cost_c and cost_c.total_from_page and cost_c.total_from_page > 0 %}{{ cost_c.total_from_page }}{% elif cost_c and cost_c.lectures %}{{ cost_c.lectures|length }}{% else %}—{% endif %}강)</div>
     <div class="cost-edit">
       <span class="cost-label">예상 총 강의수:</span>
       <input type="number" id="cost-inp" class="cost-input" value="{{ cost_total }}" min="1" max="300"/>
@@ -267,27 +249,6 @@
       <button class="btn-save" onclick="saveCostTotal()">저장</button>
     </div>
   </div>
-  
-  <div style="border-top:1px dashed var(--bd);"></div>
-
-  <!-- 분석 제외 일자 조정 (캘린더 아코디언) -->
-  <details style="width:100%;">
-    <summary style="font-size:.78rem; color:var(--muted); cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; outline:none; user-select:none;">
-      <span>📅 <b style="color:var(--blue)">분석 제외 일자 설정</b> (여행, 휴가 등 통계 제외)</span>
-      <span style="font-size:0.7rem; color:var(--muted);">접기/펴기 ▾</span>
-    </summary>
-    <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center;">
-      <input type="text" id="ex-dates-picker" style="display:none;"/>
-      <div id="calendar-container" style="width:100%; max-width:320px;"></div>
-      <div style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:4px;">
-        <span style="font-size:0.72rem; color:var(--muted);">선택된 기간: <b id="selected-range-label" style="color:var(--blue);">{% if excluded_dates_raw %}{{ excluded_dates_raw }}{% else %}없음{% endif %}</b></span>
-        <div style="display:flex; gap:6px;">
-          <button class="btn-save" style="background:rgba(239,68,68,.15); color:var(--red); border-color:rgba(239,68,68,.3);" onclick="clearExcludedDates()">초기화</button>
-          <button class="btn-save" onclick="saveExcludedDates()">반영하기</button>
-        </div>
-      </div>
-    </div>
-  </details>
 </div>
 
 {% endif %}
@@ -297,35 +258,14 @@
 
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
 // ── 데이터 ──
 const D = {
   overallPct:   {{ data.overall_pct     if data else 0 }},
 };
 
-let picker;
-document.addEventListener("DOMContentLoaded", () => {
-  picker = flatpickr("#ex-dates-picker", {
-    mode: "range",
-    inline: true,
-    appendTo: document.getElementById('calendar-container'),
-    dateFormat: "Y-m-d",
-    defaultDate: "{{ excluded_dates_raw }}".split("~").map(s => s.trim()).filter(Boolean),
-    onChange: function(selectedDates, dateStr, instance) {
-      const label = document.getElementById('selected-range-label');
-      if (selectedDates.length === 2) {
-        const start = instance.formatDate(selectedDates[0], "Y-m-d");
-        const end = instance.formatDate(selectedDates[1], "Y-m-d");
-        label.textContent = `${start} ~ ${end}`;
-      } else if (selectedDates.length === 1) {
-        label.textContent = instance.formatDate(selectedDates[0], "Y-m-d");
-      } else {
-        label.textContent = "없음";
-      }
-    }
-  });
-});
+
 
 setTimeout(() => {
   const ob = document.getElementById('overall-bar');
@@ -424,25 +364,7 @@ async function saveCostTotal() {
   setTimeout(() => location.reload(), 1200);
 }
 
-// ── 분석 제외 일자 저장 ──
-async function saveExcludedDates() {
-  const labelVal = document.getElementById('selected-range-label').textContent.trim();
-  const val = labelVal === "없음" ? "" : labelVal.replace(/\s+/g, "");
-  const res = await fetch('/api/excluded-dates',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({dates:val})});
-  if (!res.ok) { showToast('❌ 반영 실패', true); return; }
-  showToast(`✅ 제외 일자가 완강 계산에 반영되었습니다.`);
-  setTimeout(() => location.reload(), 1200);
-}
 
-// ── 분석 제외 일자 초기화 ──
-async function clearExcludedDates() {
-  if (picker) picker.clear();
-  document.getElementById('selected-range-label').textContent = "없음";
-  const res = await fetch('/api/excluded-dates',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({dates:""})});
-  if (!res.ok) { showToast('❌ 초기화 실패', true); return; }
-  showToast(`✅ 제외 일자가 초기화되었습니다.`);
-  setTimeout(() => location.reload(), 1200);
-}
 
 // ── 토스트 ──
 let tt;

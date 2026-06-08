@@ -237,6 +237,10 @@ class UriCpaScraper:
         return self._make_result(course, lectures, total_count_from_page, start_date)
 
     def _make_result(self, course, lectures, total_from_page, start_date):
+        # total_from_page가 없거나 0 이하인 경우 파싱된 강의 수로 폴백
+        if not total_from_page or total_from_page <= 0:
+            total_from_page = len(lectures) if lectures else 0
+
         if course["id"] == "cost":
             total_lectures = get_cost_total()
         else:
