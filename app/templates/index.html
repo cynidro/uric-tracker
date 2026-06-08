@@ -210,24 +210,48 @@
 
 
   <!-- 진행 중인 과목별 예상 종강일 -->
-  <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.72rem; width:100%; align-items: center; text-align: center; margin-top: 2px;">
-    <span style="color: var(--muted); font-size: 0.65rem; font-weight: bold; letter-spacing: 0.05em; margin-bottom: 2px;">📚 진행 중인 과목 완강 예정 (교재 준비용)</span>
-    {% for c in data.courses %}
-      {% if c.completed < c.total_lectures %}
-        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; color: var(--text);">
-          <span style="color: {{ c.color }}; font-weight: 700;">
-            {% if c.is_active %}[수강중] {% endif %}{{ c.name }}:
-          </span>
-          {% if c.is_active %}
-            <b style="color: var(--blue);">{{ c.simulated_finish_lecs[5:].replace('-', '/') }}(D-{{ c.simulated_days_lecs }})</b>
-            <span style="color: var(--muted); font-weight: normal;">/</span>
-            <b style="color: var(--green);">{{ c.simulated_finish_hours[5:].replace('-', '/') }}(D-{{ c.simulated_days_hours }})</b>
-          {% else %}
-            <span style="color: var(--muted);">대기 중 (예상 소요: 약 <b style="color: var(--blue);">{{ c.simulated_days_lecs }}일</b> / <b style="color: var(--green);">{{ c.simulated_days_hours }}일</b>)</span>
+  <div style="display: flex; flex-direction: column; gap: 5px; font-size: 0.72rem; width:100%; align-items: center; margin-top: 2px;">
+    <span style="color: var(--muted); font-size: 0.65rem; font-weight: bold; letter-spacing: 0.05em; margin-bottom: 4px; text-align: center; width: 100%;">📚 진행 중인 과목 완강 예정 (교재 준비용)</span>
+    <table style="border-collapse: collapse; border: none; margin: 0 auto; width: auto; font-size: 0.72rem; color: var(--text);">
+      <tbody>
+        {% for c in data.courses %}
+          {% if c.completed < c.total_lectures %}
+            <tr>
+              <!-- 1열: 상태 배지 -->
+              <td style="padding: 3px 6px; text-align: right; white-space: nowrap;">
+                {% if c.is_active %}
+                  <span style="color: var(--green); font-weight: 700; background: rgba(74, 222, 128, 0.1); padding: 1px 4px; border-radius: 3px; font-size: 0.62rem;">수강중</span>
+                {% else %}
+                  <span style="color: var(--muted); font-weight: 500; background: rgba(255, 255, 255, 0.05); padding: 1px 4px; border-radius: 3px; font-size: 0.62rem;">대기중</span>
+                {% endif %}
+              </td>
+              <!-- 2열: 과목명 -->
+              <td style="padding: 3px 6px; text-align: left; font-weight: 700; color: {{ c.color }}; white-space: nowrap;">
+                {{ c.name }}
+              </td>
+              <!-- 3열: 강의수 완강일 / 소요기간 -->
+              <td style="padding: 3px 6px; text-align: right; white-space: nowrap;">
+                {% if c.is_active %}
+                  <span style="color: var(--blue); font-weight: 700;">{{ c.simulated_finish_lecs[5:].replace('-', '/') }}(D-{{ c.simulated_days_lecs }})</span>
+                {% else %}
+                  <span style="color: var(--muted);">소요: 약 <b style="color: var(--blue);">{{ c.simulated_days_lecs }}일</b></span>
+                {% endif %}
+              </td>
+              <!-- 4열: 구분선 -->
+              <td style="padding: 3px 4px; text-align: center; color: var(--bd); font-size: 0.65rem; width: 12px;">/</td>
+              <!-- 5열: 시간 완강일 / 소요기간 -->
+              <td style="padding: 3px 6px; text-align: left; white-space: nowrap;">
+                {% if c.is_active %}
+                  <span style="color: var(--green); font-weight: 700;">{{ c.simulated_finish_hours[5:].replace('-', '/') }}(D-{{ c.simulated_days_hours }})</span>
+                {% else %}
+                  <span style="color: var(--muted);">약 <b style="color: var(--green);">{{ c.simulated_days_hours }}일</b></span>
+                {% endif %}
+              </td>
+            </tr>
           {% endif %}
-        </div>
-      {% endif %}
-    {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
