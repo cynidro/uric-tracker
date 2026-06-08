@@ -276,11 +276,24 @@ def calculate_progress(courses: list, excluded_dates: Optional[list[str]] = None
             c_rem_h /= 60.0
 
         # 개별 완강일 계산
-        _, c_finish_lec = simulate_finish_date(c_rem, wd_lec_rate, we_lec_rate, today)
-        _, c_finish_hour = simulate_finish_date(c_rem_h, wd_hour_rate, we_hour_rate, today)
+        sim_days_lec, c_finish_lec = simulate_finish_date(c_rem, wd_lec_rate, we_lec_rate, today)
+        sim_days_hour, c_finish_hour = simulate_finish_date(c_rem_h, wd_hour_rate, we_hour_rate, today)
         
         c["simulated_finish_lecs"] = c_finish_lec if c_rem > 0 else today.isoformat()
         c["simulated_finish_hours"] = c_finish_hour if c_rem_h > 0 else today.isoformat()
+        c["simulated_days_lecs"] = sim_days_lec or 0
+        c["simulated_days_hours"] = sim_days_hour or 0
+
+        # 최근 14일 동안 공부한 이력이 있는지 체크하여 현재 적극 수강 중인지 판별
+        is_active = False
+        if c["completed"] < c["total_lectures"]:
+            limit_date = (cutoff - timedelta(days=14)).isoformat()
+            for lec in lectures:
+                ld = lec.get("last_date")
+                if ld and ld >= limit_date:
+                    is_active = True
+                    break
+        c["is_active"] = is_active
 
     # ── 과목별 진도율 ─────────────────────────────────────────
     for c in courses:

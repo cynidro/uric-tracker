@@ -231,6 +231,9 @@ class UriCpaScraper:
                 "last_date":    last_date.isoformat() if last_date else None,
             })
 
+        if total_count_from_page == 0 and lectures:
+            total_count_from_page = len(lectures)
+
         return self._make_result(course, lectures, total_count_from_page, start_date)
 
     def _make_result(self, course, lectures, total_from_page, start_date):

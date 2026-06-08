@@ -233,10 +233,16 @@
     {% for c in data.courses %}
       {% if c.completed < c.total_lectures %}
         <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; color: var(--text);">
-          <span style="color: {{ c.color }}; font-weight: 700;">{{ c.name }}:</span>
-          <span>강의수 기준 <b style="color: var(--blue);">{{ c.simulated_finish_lecs }}</b></span>
-          <span style="color: var(--muted); font-weight: normal;">/</span>
-          <span>시간 기준 <b style="color: var(--green);">{{ c.simulated_finish_hours }}</b></span>
+          <span style="color: {{ c.color }}; font-weight: 700;">
+            {% if c.is_active %}[수강중] {% endif %}{{ c.name }}:
+          </span>
+          {% if c.is_active %}
+            <span>강의수 기준 <b style="color: var(--blue);">{{ c.simulated_finish_lecs }}</b></span>
+            <span style="color: var(--muted); font-weight: normal;">/</span>
+            <span>시간 기준 <b style="color: var(--green);">{{ c.simulated_finish_hours }}</b></span>
+          {% else %}
+            <span style="color: var(--muted);">대기 중 (예상 소요: 약 <b style="color: var(--blue);">{{ c.simulated_days_lecs }}일</b> / <b style="color: var(--green);">{{ c.simulated_days_hours }}일</b>)</span>
+          {% endif %}
         </div>
       {% endif %}
     {% endfor %}
